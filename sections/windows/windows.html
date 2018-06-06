@@ -1,0 +1,72 @@
+<template class="task-template">
+  <section id="push-section" class="section js-section u-category-windows">
+    <header class="section-header">
+      <div class="section-wrapper">
+        <h1>
+          <svg class="section-icon">
+            <use xlink:href="assets/img/icons.svg#icon-windows"></use>
+          </svg>
+          Push notifications
+        </h1>
+        <p>
+          Push engage api
+
+        </p>
+      </div>
+    </header>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="new-window-demo-toggle" class="js-container-target demo-toggle-button">Sending push
+          <div class="demo-meta u-avoid-clicks">
+            <span class="demo-meta-divider">|</span>
+          </div>
+        </button>
+        <div class="demo-box">
+          <div class="ajax-loader" style='visibility: hidden; height:10px; width:10px'>
+            <img src='https://3.bp.blogspot.com/-xKRjSMPpzw0/WOCZTfVqHLI/AAAAAAAAATQ/_F5aW2I6xUMZSZ_nSt8z3HQVmyukXdkGgCLcB/s1600/loader.gif'
+              class="img-responsive" />
+          </div>
+          <button type="button" class="btn btn-success active" onclick="retriveAndParseRevcontentAds()">Push notifications</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="manage-window-demo-toggle" class="js-container-target demo-toggle-button">Sending push with segment
+          <div class="demo-meta u-avoid-clicks">
+            <span class="demo-meta-divider">|</span>
+          </div>
+        </button>
+        <div class="demo-box">
+          <div class="form-group row">
+              <select id='segmentSelect' class="selectpicker" >
+     
+                </select>
+                
+            
+            <button id="segmentBtn" type="button" class="btn btn-success active" >Push notifications</button>
+
+
+          </div>
+        </div>
+      </div>
+
+
+
+
+    </div>
+    </div>
+
+    <script type="text/javascript">
+      require('./renderer-process/windows/push')
+      require('./renderer-process/windows/push_segment')
+      require('./renderer-process/windows/create-window')
+      require('./renderer-process/windows/manage-window')
+      require('./renderer-process/windows/using-window-events')
+      require('./renderer-process/windows/frameless-window')
+    </script>
+
+  </section>
+</template>

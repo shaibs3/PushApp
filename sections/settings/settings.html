@@ -1,0 +1,53 @@
+<template class="task-template">
+  <section id="shortcuts-section" class="section js-section u-category-menu">
+    <header class="section-header">
+      <div class="section-wrapper">
+        <h1>
+          <svg class="section-icon">
+            <use xlink:href="assets/img/icons.svg#icon-menu"></use>
+          </svg>
+          Settings
+        </h1>
+
+
+
+
+        <p>
+          Change user settings
+
+        </p>
+
+      </div>
+    </header>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="shortcuts-demo-toggle" class="js-container-target demo-toggle-button">Change Api keys
+          <div class="demo-meta u-avoid-clicks">
+            <span class="demo-meta-divider">|</span> </div>
+        </button>
+        <div class="demo-box">
+
+          <div class="form-group row">
+            <label for="revcontent_api_key_input" class="col-2 col-form-label">RevContent Api Key</label>
+            <div class="col-10">
+              <input class="form-control" type="string" id="revcontent_api_key_input">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="pushengage_api_key_input" class="col-2 col-form-label">Pushengage Api Key</label>
+            <div class="col-10">
+              <input class="form-control" type="string" id="pushengage_api_key_input">
+            </div>
+          </div>
+          <button id="save-btn" type="button" class="btn btn-primary active">Save</button>
+
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      require('./renderer-process/settings/settings')
+    </script>
+  </section>
+</template>
