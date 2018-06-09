@@ -5,15 +5,14 @@ console.log('shsh')
 let domainMaps = {
     "Push.lovemyleads.com": [95943, 95943, 95943],
 
-    "health.lovemyleads.com": [97700, 97703, 97704],
-    "finance.lovemyleads.com": [97705, 97706, 97707],
-    "sweeps.lovemyleads.com": [97708, 97709, 97710],
-    "dating.lovemyleads.com": [97711, 97712, 97713],
-
-    "health.monetizeplus.com": [97717, 97718, 97719],
-    "finance.monetizeplus.com": [97721, 97722, 97723],
-    "sweeps.monetizeplus.com": [97725, 97726, 97728],
-    "dating.monetizeplus.com": [97729, 97730, 97731],
+    "push.lovemyleadshealth.com": [97700, 97703, 97704],
+    "push.lovemyleadsfinance.com": [97705, 97706, 97707],
+    "push.lovemyleadssweeps.com": [97708, 97709, 97710],
+    "push.lovemyleadsdating.com": [97711, 97712, 97713],
+    "push.monetizeplushealth.com": [97717, 97718, 97719],
+    "push.monetizeplusfinance.com": [97721, 97722, 97723],
+    "push.monetizeplussweeps.com": [97725, 97726, 97728],
+    "push.monetizeplusdating.com": [97729, 97730, 97731],
 };
 
 
@@ -162,16 +161,17 @@ function retriveAndParseRevcontentAds(callback) {
     var section = $('#sectionSelect').find("option:selected").val();
     var domain;
     if (pub_id == 3120) {
-        domain = section + ".lovemyleads.com"
+        domain =  "push.lovemyleads" + section + ".com"
     }
     else {
-        domain = section + ".monetizeplus.com"
+        domain = "push.monetizeplus" + section + ".com"
     }
     var widget = domainMaps[domain][widget_idx];
 
-    
+    console.log(domain)
 
     var data = `api_key=${revcontentApiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}`
+    console.log(data)
     $.ajax({
         beforeSend: function () {
             $('.ajax-loader').css("visibility", "visible");
