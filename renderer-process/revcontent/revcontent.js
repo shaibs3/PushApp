@@ -1,93 +1,55 @@
 const $ = require("jquery");
+const shell = require('electron').shell;
 
-function retriveRevcontentAds() {
-   
+// assuming $ is jQuery
 
-    const Store = require('electron-store');
-    const store = new Store();
-
-    const revcontentApiKey = store.get('revcontent_api_key', null);
-    const pushengageApiKey = store.get('pushengage_api_key', null);
-
-    if (!revcontentApiKey || !pushengageApiKey) {
-        var dialog = remote.require('electron').dialog
-        dialog.showMessageBox({
-            message: "Please provide Api keys",
-            type: "error",
-            buttons: ["OK"]
-        });
-        return;
-    }
-
- 
-    var data = `api_key=${revcontentApiKey}&widget_id=95943&pub_id=3120&domain=Push.lovemyleads.com`
-    
-    $.ajax({
-        beforeSend: function () {
-            $('.ajax-loader').css("visibility", "visible");
-        },
-        url: 'http://trends.revcontent.com/api/v1/',
-        method: 'GET',
-        dataType: 'json',
-        data: data,
-        success: parseRevcontentAds,
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-
-            var dialog = remote.require('electron').dialog
-            dialog.showMessageBox({
-                message: "Error type: " + errorThrown,
-                type: "error",
-                buttons: ["OK"]
-            });
-        },
-        complete: function () {
-            $('.ajax-loader').css("visibility", "hidden");
-        }
-
-    });
-}
-
-
-
-
-
-const getRevContentAddsBtn = document.getElementById('getRevContentAdds')
-
-
-getRevContentAddsBtn.addEventListener('click', (event) => {
-    retriveRevcontentAds();
-})
-
-
-console.log('dddd')
-
-function parseRevcontentAds(data) {
-
+function ShowRevContentAdds(data) {
+    const paragraph = document.getElementById('revContentAdds');
     var url = "none"
     var image = "none"
-
+    var img_index = 0
     var headline = "none"
-
+    $("#revContentAddsList").empty();
     for (var i in data) {
         headline = data[i].headline;
         url = data[i].url;
         image = data[i].image;
-        break;
 
-    }
-    var info;
-    if (data.length) {
-        info = `headline:  ${headline}  url:  ${url}     image: ${image}`
-    }
-    else {
-        info = 'Did not recevice any ads from Revcontent'
+
+        var node = document.createElement("LI");
+        url_link = document.createElement('a');
+        url_link.href = 'http://' + url.substring(2); // Insted of calling setAttribute 
+        url_link.innerHTML = headline // <a>INNER_TEXT</a>
+        node.appendChild(url_link); // Append the link to the div
+        br1 = document.createElement('br');
+        node.appendChild(br1);
+        var img_str = 'http://' + image.substring(2)
+        img_link = document.createElement('a');
+        img_link.href = image.substring(2); // Insted of calling setAttribute 
+        img_link.innerHTML = "Image" // <a>INNER_TEXT</a>
+        //node.appendChild(img_link); // Append the link to the div
+        img_index++;
+        var img = $('<img />').attr({
+            'id': 'myImage' + img_index,
+            'src': img_str,
+            'alt': 'JSFiddle logo',
+            'title': 'JSFiddle logo',
+            'width': 250
+        }).appendTo(node);
+
+
+
+
+
+        document.getElementById("revContentAddsList").appendChild(node);
     }
 
-    const remote = require('electron').remote
-
-    var dialog = remote.require('electron').dialog
-    dialog.showMessageBox({
-        message: info,
-        buttons: ["OK"]
-    });
 }
+const myModule = require('../../script/revcontentApi');
+
+const getRevContentAddsBtn = document.getElementById('getRevContentAdds')
+
+getRevContentAddsBtn.addEventListener('click', (event) => {
+    myModule.retriveRevcontentAds(ShowRevContentAdds);
+
+})

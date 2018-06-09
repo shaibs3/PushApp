@@ -1,49 +1,82 @@
 const remote = require('electron').remote
-const $ = require("jquery");
-function parseRevcontentAds(data) {
 
+console.log('shsh')
+
+let domainMaps = {
+    "Push.lovemyleads.com": [95943, 95943, 95943],
+
+    "health.lovemyleads.com": [97700, 97703, 97704],
+    "finance.lovemyleads.com": [97705, 97706, 97707],
+    "sweeps.lovemyleads.com": [97708, 97709, 97710],
+    "dating.lovemyleads.com": [97711, 97712, 97713],
+
+    "health.monetizeplus.com": [97717, 97718, 97719],
+    "finance.monetizeplus.com": [97721, 97722, 97723],
+    "sweeps.monetizeplus.com": [97725, 97726, 97728],
+    "dating.monetizeplus.com": [97729, 97730, 97731],
+};
+
+
+
+function ShowRevContentAdds(data) {
+    
     var url = "none"
     var image = "none"
-
+    var img_index = 0
     var headline = "none"
-
+    $("#pushrevContentAddsList").empty();
     for (var i in data) {
         headline = data[i].headline;
         url = data[i].url;
         image = data[i].image;
-        break;
 
-    }
-    var info;
-    if (data.length) {
-        info = `headline:  ${headline}  url:  ${url}     image: ${image}`
-    }
-    else {
-        info = 'Did not recevice any ads from Revcontent'
+
+        var node = document.createElement("LI");
+        url_link = document.createElement('a');
+        url_link.href = 'http://' + url.substring(2); // Insted of calling setAttribute 
+        url_link.innerHTML = headline // <a>INNER_TEXT</a>
+        node.appendChild(url_link); // Append the link to the div
+        br1 = document.createElement('br');
+        node.appendChild(br1);
+        var img_str = 'http://' + image.substring(2)
+        img_link = document.createElement('a');
+        img_link.href = image.substring(2); // Insted of calling setAttribute 
+        img_link.innerHTML = "Image" // <a>INNER_TEXT</a>
+        //node.appendChild(img_link); // Append the link to the div
+        img_index++;
+        var img = $('<img />').attr({
+            'id': 'myImage' + img_index,
+            'src': img_str,
+            'alt': 'JSFiddle logo',
+            'title': 'JSFiddle logo',
+            'width': 250
+        }).appendTo(node);
+
+
+
+
+
+        document.getElementById("pushrevContentAddsList").appendChild(node);
     }
 
-    const remote = require('electron').remote
-
-    var dialog = remote.require('electron').dialog
-    dialog.showMessageBox({
-        message: info,
-        buttons: ["OK"]
-    });
 }
 
 function sendPushNotifications(data) {
+
+    
+    ShowRevContentAdds(data)
 
     const remote = require('electron').remote
 
     const segment = document.getElementById('segmentSelect').value;
 
-   
+
 
 
     const Store = require('electron-store');
     const store = new Store();
-    const pushengageApiKey = store.get('pushengage_api_key', null);
-    if (!pushengageApiKey) {
+    const pushEngageApiKey = store.get('pushengage_api_key', null);
+    if (!pushEngageApiKey) {
         var dialog = remote.require('electron').dialog
         dialog.showMessageBox({
             message: "Please provide Api keys",
@@ -71,8 +104,8 @@ function sendPushNotifications(data) {
         });
         return;
     }
-
-    var data_msg = 'notification_title=' + headline + '&notification_url=' + url + '&include_segments[0]=' + segment + '&notification_message=';
+    var segment_id = $('#segmentSelect').find("option:selected").val();
+    var data_msg = 'notification_title=' + headline + '&notification_url=' + url + '&include_segments[0]=' + segment_id + '&notification_message=';
 
 
 
@@ -106,14 +139,14 @@ function sendPushNotifications(data) {
 
 }
 
-function retriveAndParseRevcontentAds() {
+function retriveAndParseRevcontentAds(callback) {
 
-    
+
 
 
     const Store = require('electron-store');
     const store = new Store();
-    const revcontentApiKey = store.get('revcontent_api_key', null); 
+    const revcontentApiKey = store.get('revcontent_api_key', null);
     if (!revcontentApiKey) {
         var dialog = remote.require('electron').dialog
         dialog.showMessageBox({
@@ -123,9 +156,22 @@ function retriveAndParseRevcontentAds() {
         });
         return;
     }
+    
+    var widget_idx = $('#widgetSelect').find("option:selected").val();
+    var pub_id = $('#domainSelect').find("option:selected").val();
+    var section = $('#sectionSelect').find("option:selected").val();
+    var domain;
+    if (pub_id == 3120) {
+        domain = section + ".lovemyleads.com"
+    }
+    else {
+        domain = section + ".monetizeplus.com"
+    }
+    var widget = domainMaps[domain][widget_idx];
 
+    
 
-    var data = `api_key=${revcontentApiKey}&widget_id=95943&pub_id=3120&domain=Push.lovemyleads.com`
+    var data = `api_key=${revcontentApiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}`
     $.ajax({
         beforeSend: function () {
             $('.ajax-loader').css("visibility", "visible");
@@ -134,7 +180,7 @@ function retriveAndParseRevcontentAds() {
         method: 'GET',
         dataType: 'json',
         data: data,
-        success: sendPushNotifications,
+        success: callback,
         complete: function () {
             $('.ajax-loader').css("visibility", "hidden");
         }
@@ -159,25 +205,27 @@ function populateSegments(data) {
     select = document.getElementById('segmentSelect');
 
     for (i = 0; i < num_segments; ++i) {
-
-
         var opt = document.createElement('option');
         opt.value = data.segments[i].segment_id;
         opt.innerHTML = data.segments[i].segment_name;
         select.appendChild(opt);
 
     }
+   
+    $('.selectpicker').selectpicker('refresh');
+    
+
 }
 
 function getSegments() {
 
 
     //const segment = document.getElementById('segment-number-input').value
-    console.log('dddd')
+
 
     const Store = require('electron-store');
     const store = new Store();
-    
+
     const pushengageApiKey = store.get('pushengage_api_key', null);
     $.ajax({
         url: 'https://api.pushengage.com/apiv1/segments',
@@ -203,14 +251,37 @@ function getSegments() {
 }
 getSegments()
 
+const toggleBtn = document.getElementById('manage-window-demo-toggle')
+
+
+toggleBtn.addEventListener('click', (event) => {
+
+    $("#pushrevContentAddsList").empty();
+
+
+
+})
+
+
 
 const sendBtn = document.getElementById('segmentBtn')
 
 
 sendBtn.addEventListener('click', (event) => {
-   
-    retriveAndParseRevcontentAds();
 
-    
+    retriveAndParseRevcontentAds(sendPushNotifications);
+
+
+
+})
+
+const showAdsBtn = document.getElementById('showAdsBtn')
+
+
+showAdsBtn.addEventListener('click', (event) => {
+
+    retriveAndParseRevcontentAds(ShowRevContentAdds);
+
+
 
 })

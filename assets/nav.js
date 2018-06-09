@@ -26,7 +26,7 @@ function handleSectionTrigger (event) {
 }
 
 function activateDefaultSection () {
-  document.getElementById('button-windows').click()
+  document.getElementById('button-push-notifications').click()
 }
 
 function showMainContent () {
@@ -61,7 +61,7 @@ function hideAllSectionsAndDeselectButtons () {
 }
 
 function displayAbout () {
-  document.querySelector('#about-modal').classList.add('is-shown')
+  //document.querySelector('#about-modal').classList.add('is-shown')
 }
 
 // Default to the view that was active the last time the app was open

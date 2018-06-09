@@ -14,16 +14,16 @@ deleteOutputFolder()
 
 function getInstallerConfig () {
   const rootPath = path.join(__dirname, '..')
-  const outPath = path.join(rootPath, 'out')
+  const outPath = path.join(rootPath, 'out/PushApp-win32-ia32')
 
   return Promise.resolve({
-    appDirectory: path.join(outPath, 'Electron API Demos-win32-ia32'),
-    exe: 'Electron API Demos.exe',
+    appDirectory: path.join(outPath, './'),
+    exe: 'PushApp.exe',
     iconUrl: 'https://raw.githubusercontent.com/electron/electron-api-demos/master/assets/app-icon/win/app.ico',
     loadingGif: path.join(rootPath, 'assets', 'img', 'loading.gif'),
     noMsi: true,
     outputDirectory: path.join(outPath, 'windows-installer'),
-    setupExe: 'ElectronAPIDemosSetup.exe',
+    setupExe: 'PushSetup.exe',
     setupIcon: path.join(rootPath, 'assets', 'app-icon', 'win', 'app.ico'),
     skipUpdateIcon: true
   })

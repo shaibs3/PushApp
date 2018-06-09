@@ -6,15 +6,16 @@ const path = require('path')
 const request = require('request')
 const util = require('util')
 
-const token = process.env.ELECTRON_API_DEMO_GITHUB_TOKEN
+const token = '43403fe3008baabd34f85019688c0864346fcc0b';// process.env.ELECTRON_API_DEMO_GITHUB_TOKEN
+console.log('token is = ', token)
 const version = require('../package').version
 
 checkToken()
-  .then(checkHerokuLoginStatus)
-  .then(zipAssets)
-  .then(createRelease)
-  .then(uploadAssets)
-  .then(publishRelease)
+  //.then(checkHerokuLoginStatus)
+  //.then(zipAssets)
+  //.then(createRelease)
+  //.then(uploadAssets)
+  //.then(publishRelease)
   .then(deployToHeroku)
   .catch((error) => {
     console.error(error.message || error)
@@ -74,7 +75,7 @@ function zipAssets () {
     path: path.join(outPath, 'Electron API Demos-darwin-x64', 'Electron API Demos.app')
   }, {
     name: 'electron-api-demos-windows.zip',
-    path: path.join(outPath, 'ElectronAPIDemos-win32-ia32')
+    path: path.join(outPath, 'PushApp')
   }, {
     name: 'electron-api-demos-linux.zip',
     path: path.join(outPath, 'Electron API Demos-linux-x64')
