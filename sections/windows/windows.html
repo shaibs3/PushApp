@@ -10,101 +10,75 @@
         </h1>
         <p>
           Push engage api
-
         </p>
       </div>
     </header>
-
-    <!-- <div class="demo">
-      <div class="demo-wrapper">
-        <button id="new-window-demo-toggle" class="js-container-target demo-toggle-button">Sending push
-          <div class="demo-meta u-avoid-clicks">
-            <span class="demo-meta-divider">|</span>
-          </div>
-        </button>
-       
-        </div>
-      </div> -->
-       
-
+    
     <div class="demo">
-      <div class="demo-wrapper">
-        <button id="manage-window-demo-toggle" class="js-container-target demo-toggle-button">Sending push 
+      <div id='ss' class="demo-wrapper">
+        <button id="manage-window-demo-toggle" class="js-container-target demo-toggle-button">Sending push
           <div class="demo-meta u-avoid-clicks">
             <span class="demo-meta-divider">|</span>
           </div>
         </button>
-
         </select>
         <div class="demo-box">
           <div class="form-group row">
-
-
             <select title="Choose a segment" id="segmentSelect" name="segment" class="selectpicker">
               <option data-hidden="true">Choose a segment</option>
               <option> None </option>
             </select>
+          </div>
+          <div class="form-group row">
 
             <select title="Choose a section" id="sectionSelect" name="segment" class="selectpicker">
-
-
-              <option data-hidden="true">Choose a domain</option>
+              <option data-hidden="true">Choose a section</option>
               <option> Push </option>
               <option> health </option>
               <option> finance</option>
               <option> sweeps</option>
               <option> dating</option>
             </select>
+          </div>
+          <div class="form-group row">
 
             <select title="Choose a domain" id="domainSelect" name="domain" class="selectpicker">
-              <option data-hidden="true">Choose a section</option>
+              <option data-hidden="true">Choose a domain</option>
               <option value=3120> lovemyleads.com </option>
               <option value=77628> monetizeplus.com</option>
-
-
-
             </select>
-
-
+          </div>
+          <div class="form-group row">
             <select title="Choose a widget" id="widgetSelect" name="widget" class="selectpicker">
               <option data-hidden="true">Choose a widget</option>
               <option value=0> Push Widget - 1-10 </option>
               <option value=1> Push Widget - 11-30 </option>
               <option value=2> Push Widget - 31+</option>
             </select>
-
+          </div>
 
           </br>
-            <button id="segmentBtn" type="button" class="btn btn-success active">Push notifications</button>
+          <div class="form-group row">
+              <div class="twoToneCenter">
+                  <button  id="segmentBtn" class="twoToneButton">Send push</button>
+              </div>
+            <!-- <button id="segmentBtn" type="button" class="btn btn-success active">Push notifications</button> -->
             <button id="showAdsBtn" type="button" class="btn btn-primary active">Show ads</button>
-            <ul id="pushrevContentAddsList">
-              </ul>
           </div>
+          <ul id="pushrevContentAddsList">
+          </ul>
+
         </div>
       </div>
-
-
-
-
     </div>
     </div>
     <script type="text/javascript" src="./renderer-process/windows/push_segment.js"></script>
     <script type="text/javascript">
-    
       require('./renderer-process/windows/push')
-     // require('./renderer-process/windows/push_segment')
       require('./renderer-process/windows/create-window')
       require('./renderer-process/windows/manage-window')
       require('./renderer-process/windows/using-window-events')
       require('./renderer-process/windows/frameless-window')
-
     </script>
-
-
-
-
-
-
-
   </section>
 </template>

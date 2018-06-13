@@ -11,8 +11,8 @@ function sendPushNotifications(data) {
     const Store = require('electron-store');
     const store = new Store();
     store.get('pushengage_api_key', pushengageApiKey);
-
-    if (!pushengageApiKey) {
+    store.get('monetize_api_key', monetizeApiKey);
+    if (!pushengageApiKey || !monetizeApiKey) {
         var dialog = remote.require('electron').dialog
         dialog.showMessageBox({
             message: "Please provide Api keys",

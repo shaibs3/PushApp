@@ -1,6 +1,6 @@
 const remote = require('electron').remote
 
-console.log('shsh')
+
 
 let domainMaps = {
     "Push.lovemyleads.com": [95943, 95943, 95943],
@@ -17,8 +17,8 @@ let domainMaps = {
 
 
 
-function ShowRevContentAdds(data) {
-    
+function ShowRevContentAds(data) {
+
     var url = "none"
     var image = "none"
     var img_index = 0
@@ -28,8 +28,8 @@ function ShowRevContentAdds(data) {
         headline = data[i].headline;
         url = data[i].url;
         image = data[i].image;
-
-
+        if (i === '0')
+            console.log("correct url" + url)
         var node = document.createElement("LI");
         url_link = document.createElement('a');
         url_link.href = 'http://' + url.substring(2); // Insted of calling setAttribute 
@@ -60,10 +60,10 @@ function ShowRevContentAdds(data) {
 
 }
 
-function sendPushNotifications(data) {
+function sendPushNotifications(jsonData, pushApiKey) {
 
-    
-    ShowRevContentAdds(data)
+
+    ShowRevContentAds(jsonData);
 
     const remote = require('electron').remote
 
@@ -74,8 +74,9 @@ function sendPushNotifications(data) {
 
     const Store = require('electron-store');
     const store = new Store();
-    const pushEngageApiKey = store.get('pushengage_api_key', null);
-    if (!pushEngageApiKey) {
+ 
+   
+    if (!pushApiKey ) {
         var dialog = remote.require('electron').dialog
         dialog.showMessageBox({
             message: "Please provide Api keys",
@@ -86,15 +87,17 @@ function sendPushNotifications(data) {
     }
 
 
+    if (jsonData.length) {
+        headline = jsonData[0].headline;
 
-
-    if (data.length) {
-        headline = data[0].headline;
-        url = data[0].url;
-        image = data[0].image;
+        url = 'http://' + jsonData[0].url.substring(2)
+        console.log("before url" + url)
+        url = encodeURIComponent(url)
+        
+        console.log("after url" + url)
+        image = 'http://' + jsonData[0].image.substring(2);
     }
-
-    if (!headline.length || !image.length || !url.length) {
+    else {
         var dialog = remote.require('electron').dialog
         dialog.showMessageBox({
             message: "Did not send push notifications [No adds retrieved from revcontent]",
@@ -104,21 +107,31 @@ function sendPushNotifications(data) {
         return;
     }
     var segment_id = $('#segmentSelect').find("option:selected").val();
-    var data_msg = 'notification_title=' + headline + '&notification_url=' + url + '&include_segments[0]=' + segment_id + '&notification_message=';
+    var data_msg =
+        "notification_title="
+        + headline
+        + "&notification_url="
+        + url
+        + "&image_url="
+        + image
+        +"&include_segments[0]="
+        + segment_id
+        + "&notification_message=";
 
-
+  
 
     $.ajax({
         url: 'https://api.pushengage.com/apiv1/notifications',
         headers: {
-            'api_key': pushEngageApiKey,
+            'api_key': pushApiKey,
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        method: 'POST',
+        type: 'POST',
         dataType: 'json',
         data: data_msg,
+
         success: function (data) {
-            console.log('succes: ' + data);
+
             var dialog = remote.require('electron').dialog
             dialog.showMessageBox({
                 message: "Succesfuly sent push notifications",
@@ -146,6 +159,7 @@ function retriveAndParseRevcontentAds(callback) {
     const Store = require('electron-store');
     const store = new Store();
     const revcontentApiKey = store.get('revcontent_api_key', null);
+    const monetizeApiKey = store.get('monetize_api_key', null);
     if (!revcontentApiKey) {
         var dialog = remote.require('electron').dialog
         dialog.showMessageBox({
@@ -155,34 +169,45 @@ function retriveAndParseRevcontentAds(callback) {
         });
         return;
     }
-    
+
     var widget_idx = $('#widgetSelect').find("option:selected").val();
     var pub_id = $('#domainSelect').find("option:selected").val();
     var section = $('#sectionSelect').find("option:selected").val();
     var domain;
+    var apiKey;
+    var pushApiKey;
     if (pub_id == 3120) {
-        domain =  "push.lovemyleads" + section + ".com"
+        domain = "push.lovemyleads" + section + ".com"
+        apiKey = revcontentApiKey
+        pushApiKey = store.get('pushengage_api_key', null);
     }
     else {
         domain = "push.monetizeplus" + section + ".com"
+        apiKey = monetizeApiKey
+        pushApiKey = store.get('monetize_pushengage_api_key', null);
     }
+    console.log('ddd')
     var widget = domainMaps[domain][widget_idx];
 
-    console.log(domain)
 
-    var data = `api_key=${revcontentApiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}`
-    console.log(data)
+
+    var data = `api_key=${apiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}`
+
     $.ajax({
         beforeSend: function () {
-            $('.ajax-loader').css("visibility", "visible");
+            sendBtn.innerHTML = "Signing In";
+            sendBtn.classList.add('spinning');
         },
         url: 'http://trends.revcontent.com/api/v1/',
         method: 'GET',
         dataType: 'json',
         data: data,
-        success: callback,
+        success: function(data){
+            callback(data, pushApiKey)
+        },
         complete: function () {
-            $('.ajax-loader').css("visibility", "hidden");
+            sendBtn.classList.remove('spinning');
+            sendBtn.innerHTML = "Sign In";
         }
 
     });
@@ -211,9 +236,9 @@ function populateSegments(data) {
         select.appendChild(opt);
 
     }
-   
+
     $('.selectpicker').selectpicker('refresh');
-    
+
 
 }
 
@@ -257,6 +282,7 @@ const toggleBtn = document.getElementById('manage-window-demo-toggle')
 toggleBtn.addEventListener('click', (event) => {
 
     $("#pushrevContentAddsList").empty();
+    $('.selectpicker').selectpicker('refresh');
 
 
 
@@ -264,10 +290,25 @@ toggleBtn.addEventListener('click', (event) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const sendBtn = document.getElementById('segmentBtn')
 
 
 sendBtn.addEventListener('click', (event) => {
+
 
     retriveAndParseRevcontentAds(sendPushNotifications);
 
@@ -280,7 +321,7 @@ const showAdsBtn = document.getElementById('showAdsBtn')
 
 showAdsBtn.addEventListener('click', (event) => {
 
-    retriveAndParseRevcontentAds(ShowRevContentAdds);
+    retriveAndParseRevcontentAds(ShowRevContentAds);
 
 
 
