@@ -25,13 +25,13 @@ module.exports = {
             return;
         }
 
-        var data = `api_key=${revcontentApiKey}&widget_id=95943&pub_id=3120&domain=Push.lovemyleads.com`
+        var data = `api_key=${revcontentApiKey}&widget_id=95943&pub_id=3120&domain=Push.lovemyleads.com&tracking=manual&tracking_method=get`
 
         $.ajax({
             beforeSend: function () {
                 $('.ajax-loader').css("visibility", "visible");
             },
-            url: 'http://trends.revcontent.com/api/v1/',
+            url: 'http://trends.revcontent.com/api/v2/',
             method: 'GET',
             dataType: 'json',
             data: data,

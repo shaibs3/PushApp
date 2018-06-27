@@ -88,7 +88,7 @@ function retriveAndParseRevcontentAds() {
         beforeSend: function () {
             $('.ajax-loader').css("visibility", "visible");
         },
-        url: 'http://trends.revcontent.com/api/v1/',
+        url: 'http://trends.revcontent.com/api/v2/',
         method: 'GET',
         dataType: 'json',
         data: data,

@@ -13,24 +13,27 @@
         </p>
       </div>
     </header>
-    
+
     <div class="demo">
-      <div id='ss' class="demo-wrapper">
-        <button id="manage-window-demo-toggle" class="js-container-target demo-toggle-button">Sending push
+
+      <div id='aSection' class="demo-wrapper">
+        <button id="aSectionToggle" class="js-container-target demo-toggle-button">Sending push
           <div class="demo-meta u-avoid-clicks">
             <span class="demo-meta-divider">|</span>
           </div>
         </button>
         </select>
+
         <div class="demo-box">
+
           <div class="form-group row">
             <select title="Choose a segment" id="segmentSelect" name="segment" class="selectpicker">
               <option data-hidden="true">Choose a segment</option>
               <option> None </option>
             </select>
           </div>
-          <div class="form-group row">
 
+          <div class="form-group row">
             <select title="Choose a section" id="sectionSelect" name="segment" class="selectpicker">
               <option data-hidden="true">Choose a section</option>
               <option> Push </option>
@@ -40,14 +43,15 @@
               <option> dating</option>
             </select>
           </div>
-          <div class="form-group row">
 
+          <div class="form-group row">
             <select title="Choose a domain" id="domainSelect" name="domain" class="selectpicker">
               <option data-hidden="true">Choose a domain</option>
               <option value=3120> lovemyleads.com </option>
               <option value=77628> monetizeplus.com</option>
             </select>
           </div>
+
           <div class="form-group row">
             <select title="Choose a widget" id="widgetSelect" name="widget" class="selectpicker">
               <option data-hidden="true">Choose a widget</option>
@@ -58,27 +62,124 @@
           </div>
 
           </br>
+
           <div class="form-group row">
-              <div class="twoToneCenter">
-                  <button  id="segmentBtn" class="twoToneButton">Send push</button>
-              </div>
-            <!-- <button id="segmentBtn" type="button" class="btn btn-success active">Push notifications</button> -->
-            <button id="showAdsBtn" type="button" class="btn btn-primary active">Show ads</button>
+            <div class="twoToneCenter">
+              <button id="segmentBtn" type="button" class="btn btn-primary active">Send push</button>
+              <button id="showAdsBtn" type="button" class="btn btn-primary active">Show ads</button>
+            </div>
+
           </div>
           <ul id="pushrevContentAddsList">
           </ul>
+        </div>
+      </div>
+
+
+      <div id='bSection' class="demo-wrapper">
+        <button id="bSectionToggle" class="js-container-target demo-toggle-button">Sending push with countries
+          <div class="demo-meta u-avoid-clicks">
+            <span class="demo-meta-divider">|</span>
+          </div>
+        </button>
+        </select>
+        <div class="demo-box">
+
+          <div class="form-group row">
+            <select title="Choose a domain" id="bSectionDomainSelect" name="domain" class="selectpicker" style="width: 250px">
+              <option data-hidden="true">Choose a domain</option>
+              <option value=3120> lovemyleads.com </option>
+              <option value=77628> monetizeplus.com</option>
+            </select>
+          </div>
+
+          <div class="form-group row">
+
+            <select class="js-example-basic-multiple" title="Choose a country" id="bSectionCountrySelect" name="segment" multiple="multiple"
+              style="width: 220px">
+              <option data-hidden="true">Choose a Country</option>
+              <option> All </option>
+            </select>
+
+
+          </div>
+
+
+
+          <div class="form-group row">
+
+            <select title="Choose a section" id="bSectionSectionSelect" name="segment" class="selectpicker" style="width: 250px">
+              <option data-hidden="true">Choose a section</option>
+              <option> Push </option>
+              <option> health </option>
+              <option> finance</option>
+              <option> sweeps</option>
+              <option> dating</option>
+            </select>
+          </div>
+
+          <div class="form-group row">
+            <select title="Choose a widget" id="bSectionWidgetSelect" name="widget" class="selectpicker">
+              <option data-hidden="true">Choose a widget</option>
+              <option value=0> Push Widget - 1-10 </option>
+              <option value=1> Push Widget - 11-30 </option>
+              <option value=2> Push Widget - 31+</option>
+            </select>
+          </div>
+
+          </br>
+          <div class="form-group row">
+            <div class="twoToneCenter">
+              <button id="bSectionSendPushBtn" class="btn btn-primary warning">Send push</button>
+              <button id="bSectionShowAdsBtn" class="btn btn-primary active">Show ads</button>
+
+            </div>
+            <div id="img" style="display:none" class="loading">
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+            </div>
+
+            <!-- <button id="segmentBtn" type="button" class="btn btn-success active">Push notifications</button> -->
+
+
+          </div>
+          <ul id="bSectionpushrevContentAddsList">
+          </ul>
+          <ul id="bSectionsendStatus">
+          </ul>
+          <div id="here_table">
+          </div>
+          <table id="myTable" class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>Country</th>
+                <th>Number ads</th>
+                <th>Send status</th>
+
+              </tr>
+            </thead>
+            <tbody id="table_body">
+
+
+            </tbody>
+          </table>
+
 
         </div>
       </div>
+
+
     </div>
-    </div>
+
     <script type="text/javascript" src="./renderer-process/windows/push_segment.js"></script>
+    <script type="text/javascript" src="./renderer-process/windows/push_countries.js"></script>
     <script type="text/javascript">
       require('./renderer-process/windows/push')
       require('./renderer-process/windows/create-window')
       require('./renderer-process/windows/manage-window')
       require('./renderer-process/windows/using-window-events')
-      require('./renderer-process/windows/frameless-window')
     </script>
   </section>
 </template>

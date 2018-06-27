@@ -17,13 +17,14 @@ let domainMaps = {
 
 
 
-function ShowRevContentAds(data) {
+function ShowRevContentAds(jsonData) {
 
     var url = "none"
     var image = "none"
     var img_index = 0
     var headline = "none"
     $("#pushrevContentAddsList").empty();
+    data = jsonData.content;
     for (var i in data) {
         headline = data[i].headline;
         url = data[i].url;
@@ -86,16 +87,16 @@ function sendPushNotifications(jsonData, pushApiKey) {
         return;
     }
 
+    
+    if (jsonData.content.length) {
+        headline = jsonData.content[0].headline;
 
-    if (jsonData.length) {
-        headline = jsonData[0].headline;
-
-        url = 'http://' + jsonData[0].url.substring(2)
+        url = 'http://' + jsonData.content[0].url.substring(2)
         console.log("before url" + url)
         url = encodeURIComponent(url)
         
         console.log("after url" + url)
-        image = 'http://' + jsonData[0].image.substring(2);
+        image = 'http://' + jsonData.content[0].image.substring(2);
     }
     else {
         var dialog = remote.require('electron').dialog
@@ -186,19 +187,19 @@ function retriveAndParseRevcontentAds(callback) {
         apiKey = monetizeApiKey
         pushApiKey = store.get('monetize_pushengage_api_key', null);
     }
-    console.log('ddd')
+  
     var widget = domainMaps[domain][widget_idx];
 
 
 
-    var data = `api_key=${apiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}`
+    var data = `api_key=${apiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}&tracking=manual&tracking_method=get`
 
     $.ajax({
         beforeSend: function () {
             sendBtn.innerHTML = "Signing In";
             sendBtn.classList.add('spinning');
         },
-        url: 'http://trends.revcontent.com/api/v1/',
+        url: 'http://trends.revcontent.com/api/v2/',
         method: 'GET',
         dataType: 'json',
         data: data,
@@ -276,7 +277,7 @@ function getSegments() {
 }
 getSegments()
 
-const toggleBtn = document.getElementById('manage-window-demo-toggle')
+const toggleBtn = document.getElementById('aSectionToggle')
 
 
 toggleBtn.addEventListener('click', (event) => {
