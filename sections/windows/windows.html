@@ -61,6 +61,15 @@
             </select>
           </div>
 
+
+
+
+
+
+
+
+
+
           </br>
 
           <div class="form-group row">
@@ -118,6 +127,16 @@
             </select>
           </div>
 
+
+         
+
+
+
+
+
+
+
+
           <div class="form-group row">
             <select title="Choose a widget" id="bSectionWidgetSelect" name="widget" class="selectpicker">
               <option data-hidden="true">Choose a widget</option>
@@ -127,6 +146,21 @@
             </select>
           </div>
 
+          <form class="form-inline row">
+              <div class="form-group mx-sm-3 mb-2">
+                  <input type="checkbox" id='schedToggle' name="bootstrapCheck" data-on="On" data-off="Off" data-toggle="toggle" data-onstyle="warning" style="width: 10px"  name="feature" />
+                  
+                </div>
+              <div class="form-group mb-2">
+                  <div class='input-group date' id='datetimepicker1' style="width: 220px">
+                      <input id='dateInput' type='text' class="form-control" disabled="true"/>
+                      <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                  </div>
+              </div>
+
+            </form>
           </br>
           <div class="form-group row">
             <div class="twoToneCenter">
@@ -171,8 +205,17 @@
       </div>
 
 
-    </div>
 
+
+  
+
+
+    </div>
+    <script type="text/javascript">
+      $(function () {
+        $('#datetimepicker1').datetimepicker();
+      });
+    </script>
     <script type="text/javascript" src="./renderer-process/windows/push_segment.js"></script>
     <script type="text/javascript" src="./renderer-process/windows/push_countries.js"></script>
     <script type="text/javascript">

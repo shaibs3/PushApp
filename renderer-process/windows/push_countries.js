@@ -428,10 +428,6 @@ let countryToIp = {
 
 
 
-
-
-
-
 function bSectionShowRevContentAds(jsonData) {
 
     var url = "none"
@@ -444,8 +440,7 @@ function bSectionShowRevContentAds(jsonData) {
         headline = data[i].headline;
         url = data[i].url;
         image = data[i].image;
-        if (i === '0')
-            console.log("correct url" + url)
+
         var node = document.createElement("LI");
         url_link = document.createElement('a');
         url_link.href = 'http://' + url.substring(2); // Insted of calling setAttribute 
@@ -475,19 +470,134 @@ function bSectionShowRevContentAds(jsonData) {
     }
 
 }
+function convertMonth(str) {
+    switch (str) {
+        case 'Jan':
+            return '01'
+        case 'Feb':
+            return '02'
+        case 'Mar':
+            return '03'
+        case 'Apr':
+            return '04'
+        case 'May':
+            return '05'
+        case 'Jun':
+            return '06'
+        case 'Jul':
+            return '07'
+        case 'Aug':
+            return '08'
+        case 'Sep':
+            return '09'
+        case 'Oct':
+            return '10'
+        case 'Nov':
+            return '11'
+        case 'Dec':
+            return '12'
 
-function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
+    }
+}
 
+function SchedulePush(jsonData, pushApiKey, country) {
 
-    ShowRevContentAds(jsonData);
 
     const remote = require('electron').remote
-
-
-
     const Store = require('electron-store');
     const store = new Store();
 
+    let datePicker = $('#datetimepicker1').data('DateTimePicker').date()
+    let time_str = datePicker._d + ""
+    var array = time_str.split(" ");
+    var month = convertMonth(array[1])
+    var day = array[2]
+    var year = array[3]
+    var hourMinSec = array[4]
+    var time = year + "-" + month + "-" + day + " " + hourMinSec
+
+
+    if (!pushApiKey) {
+        var dialog = remote.require('electron').dialog
+        dialog.showMessageBox({
+            message: "Please provide Api keys",
+            type: "error",
+            buttons: ["OK"]
+        });
+        return;
+    }
+
+    if (jsonData.content.length) {
+        let idx = Math.floor(Math.random() % jsonData.content.length)
+        headline = jsonData.content[idx].headline;
+        url = 'http://' + jsonData.content[idx].url.substring(2)
+        url = encodeURIComponent(url)
+        image = 'http://' + jsonData.content[idx].image.substring(2);
+    }
+    else {
+        status_array[status_array_idx] = { country: country, num_ads: 0, send: 'fail' };
+        status_array_idx++
+        semaphore--
+        return;
+    }
+
+    var data_msg =
+        "notification_title="
+        + headline
+        + "&notification_url="
+        + url
+        + "&image_url="
+        + image
+        + "&include_countries[0]="
+        + country
+        + "&notification_message="
+        + "&notification_type=later"
+        + "&valid_from_utc="
+        + time
+        
+    $.ajax({
+        url: 'https://api.pushengage.com/apiv1/notifications',
+        headers: {
+            'api_key': pushApiKey,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        type: 'POST',
+        dataType: 'json',
+        local_country: country,
+        data: data_msg,
+
+        success: function (data) {
+            status_array[status_array_idx] = { country: country, num_ads: jsonData.content.length, send: 'Success' };
+            status_array_idx++;
+            semaphore--
+            if (semaphore == 0) {
+                sentComplete()
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            semaphore--
+            status_array[status_array_idx] = { country: country, num_ads: jsonData.content.length, send: 'Success' };
+            status_array_idx++;
+            var dialog = remote.require('electron').dialog
+            dialog.showMessageBox({
+                message: "Error type: " + errorThrown,
+                type: "error",
+                buttons: ["OK"]
+            });
+        }
+    });
+
+
+}
+
+
+
+function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
+
+    ShowRevContentAds(jsonData);
+    const remote = require('electron').remote
+    const Store = require('electron-store');
+    const store = new Store();
 
     if (!pushApiKey) {
         var dialog = remote.require('electron').dialog
@@ -501,28 +611,21 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
 
 
     if (jsonData.content.length) {
-        headline = jsonData.content[0].headline;
+        let idx = Math.floor(Math.random() % jsonData.content.length)
+        headline = jsonData.content[idx].headline;
 
-        url = 'http://' + jsonData.content[0].url.substring(2)
-        console.log("before url" + url)
+        url = 'http://' + jsonData.content[idx].url.substring(2)
+      
         url = encodeURIComponent(url)
 
-        console.log("after url" + url)
         image = 'http://' + jsonData.content[0].image.substring(2);
     }
     else {
         status_array[status_array_idx] = { country: country, num_ads: 0, send: 'fail' };
         status_array_idx++
-        // var dialog = remote.require('electron').dialog
-        //  dialog.showMessageBox({
-        //     message: "Did not send push notifications with country = " + country + " [No adds retrieved from revcontent ]",
-        //     type: "error",
-        //     buttons: ["OK"]
-        // });
+        semaphore--
         return;
     }
-
-
 
     var data_msg =
         "notification_title="
@@ -535,8 +638,6 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
         + country
         + "&notification_message=";
 
-
-    semaphore++
     $.ajax({
         url: 'https://api.pushengage.com/apiv1/notifications',
         headers: {
@@ -549,12 +650,6 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
         data: data_msg,
 
         success: function (data) {
-
-            //  var dialog = remote.require('electron').dialog
-            // dialog.showMessageBox({
-            //    message: "Succesfuly sent push notifications to " + this.local_country + " users",
-            //   buttons: ["OK"]
-            //});
             status_array[status_array_idx] = { country: country, num_ads: jsonData.content.length, send: 'Success' };
             status_array_idx++;
             semaphore--;
@@ -563,6 +658,9 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
+            status_array[status_array_idx] = { country: country, num_ads: jsonData.content.length, send: 'Fail' };
+            status_array_idx++;
+            semaphore--;
             var dialog = remote.require('electron').dialog
             dialog.showMessageBox({
                 message: "Error type: " + errorThrown,
@@ -576,147 +674,35 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
 }
 
 function sentComplete() {
-   
+
     $("#bSectionpushrevContentAddsList").empty();
     $("#bSectionsendStatus").empty();
-    // $('#here_table').empty();
-    // $('#here_table').append("<table class='table table-striped table-bordere'  />");
-     let i = 0;
-    // $('#here_table table').append('<th>  Country</th>');
-    // $('#here_table table').append('<th>  Number ads</th>');
-    // $('#here_table table').append('<th>  Result</th>');
-    
+
+    let i = 0;
+
+
     $('#myTable').show();
     var t = $('#myTable').DataTable();
     t.clear()
-    .draw();
-    
+        .draw();
+
     for (; i < status_array_idx; i++) {
-let num_ads = "" + status_array[i].num_ads
-        t.row.add( [
+        let num_ads = "" + status_array[i].num_ads
+        t.row.add([
             status_array[i].country,
-            num_ads ,
-            status_array[i].send ,
-        ] ).draw( false );
+            num_ads,
+            status_array[i].send,
+        ]).draw(false);
         //$('#myTable tbody').append('<tr><td>' +  + '</td><td>' +  + '</td><td>' + + '</td></tr>');
 
     }
 
-   
     var counter = 1;
- 
- 
-    
-
-
-    //$('#myTable').DataTable();
-   // $('#here_table table').DataTable();
     status_array_idx = 0;
-    $('#img').hide(); 
+    $('#img').hide();
 }
 
 
-//  function sentComplete() {
-
-
-//     $("#bSectionsendStatus").empty();
-//     var dialog = remote.require('electron').dialog
-//     let i = 0;
-//     let data_msg = '';
-//     var node = document.createElement("LI");
-
-//     var newDiv = document.createElement("div");
-//     // and give it some content 
-//     var newContent = document.createTextNode("country    Number-ads");
-//     // add the text node to the newly created div
-//     newDiv.appendChild(newContent);
-//     node.appendChild(newDiv); // Append the link to the div
-//     document.getElementById("bSectionsendStatus").appendChild(node);
-//     for (; i < status_array_idx; i++) {
-//         data_msg +=
-//             "" +
-//             status_array[i].country +
-//             "- Num ads: " + status_array[i].num_ads +
-//             ", Status : " + status_array[i].send +
-//             "\n"
-
-
-
-//         var node = document.createElement("LI");
-
-//         var newDiv = document.createElement("div");
-//         // and give it some content 
-//         var newContent = document.createTextNode(data_msg);
-//         // add the text node to the newly created div
-//         newDiv.appendChild(newContent);
-//         node.appendChild(newDiv); // Append the link to the div
-
-
-
-
-
-
-
-//         document.getElementById("bSectionsendStatus").appendChild(node);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//     }
-//     // dialog.showMessageBox({
-//     //     message: data_msg,
-//     //     buttons: ["OK"]
-//     // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// }
 function bSectionRetriveAndParseRevcontentAds(callback) {
 
 
@@ -767,7 +753,7 @@ function bSectionRetriveAndParseRevcontentAds(callback) {
         }
     }
 
-
+    semaphore = num_selected_countries;
     for (; i < num_selected_countries; i++) {
 
         var country;
@@ -792,21 +778,25 @@ function bSectionRetriveAndParseRevcontentAds(callback) {
             dataType: 'json',
             data: data,
             local_country: country,
+           
             success: function (data) {
                 callback(data, pushApiKey, this.local_country)
             },
+            error: function (data) {
+                semaphore--
+                status_array[status_array_idx] = { country: this.local_country, num_ads: 0, send: 'Fail' };
+                status_array_idx++;
+            },
             complete: function () {
-                //sentComplete()
+                if (semaphore == 0) {
+                    sentComplete()
+                }
 
             }
 
         });
     }
 }
-
-
-
-
 
 function populateCountriesStateCities(data) {
 
@@ -824,11 +814,7 @@ function populateCountriesStateCities(data) {
     }
 
     $('#bSectionCountrySelect').trigger('change');
-
-
 }
-
-
 
 function getCountriesCitiesStates() {
 
@@ -869,10 +855,6 @@ function getCountriesCitiesStates() {
 
 }
 
-
-
-
-
 /* register callback */
 
 const bSectionToggle = document.getElementById('bSectionToggle')
@@ -890,39 +872,40 @@ $("#bSectionDomainSelect").change(function () {
 });
 $(document).ready(function () {
     /*initiallize widgets */
-   
+
     $('#myTable').DataTable();
     $('#myTable').hide();
     $("#bSectionCountrySelect").select2({ placeholder: 'Select a country' });
     getCountriesCitiesStates()
 })
 
-const bSectionSendBtn = document.getElementById('bSectionSendPushBtn')
 
 
-bSectionSendBtn.addEventListener('click', (event) => {
+$('#bSectionSendPushBtn').bind('click.mynamespace', function () {
+    $('#img').show();
+    bSectionRetriveAndParseRevcontentAds(bSectionSendPushNotifications)
+});
 
-    $('#img').show(); 
-    bSectionRetriveAndParseRevcontentAds(bSectionSendPushNotifications);
+$('#schedToggle').change(function () {
+  
+    $('#bSectionSendPushBtn').unbind('click.mynamespace');
+    if ($(this).is(':checked')) {
+        $('#dateInput').prop('disabled', false);
+        $("#bSectionSendPushBtn").html('Scheduale push');
+        $('#bSectionSendPushBtn').bind('click.mynamespace', function () {
+            $('#img').show();
+            bSectionRetriveAndParseRevcontentAds(SchedulePush)
+        });
+ 
+    }
+    else {
+        $("#bSectionSendPushBtn").html('Send push');
+        $('#dateInput').prop('disabled', true);
 
-
-
+        $('#bSectionSendPushBtn').bind('click.mynamespace', function () {
+            $('#img').show();
+            bSectionRetriveAndParseRevcontentAds(bSectionSendPushNotifications);
+        });
+    
+    }
 })
-
-const bSectionShowAdsBtn = document.getElementById('bSectionShowAdsBtn')
-
-
-bSectionShowAdsBtn.addEventListener('click', (event) => {
-
-    bSectionRetriveAndParseRevcontentAds(bSectionShowRevContentAds);
-
-
-
-})
-
-
-
-
-    //    <table data-toggle="table" 
-    //   data-url="https://api.github.com/users/wenzhixin/repos?type=owner&sort=full_name&direction=asc&pe
-    //   r_page=100&page=1" data-sort-name="stargazers_count" data-sort-order="desc"> <thead> <tr> <th data-field="name" data-sortable="true"> Name </th> <th data-field="stargazers_count" data-sortable="true"> Stars </th> <th data-field="forks_count" data-sortable="true"> Forks </th> <th data-field="description" data-sortable="true"> Description </th> </tr></thead></table> <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>

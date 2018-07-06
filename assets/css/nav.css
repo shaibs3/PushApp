@@ -187,3 +187,12 @@
     transform: scale(1);
   }
 }
+
+select:-moz-focusring {
+  color:transparent;
+  text-shadow:0 0 0 #000; /* your normal text color here */
+}
+select:-moz-focusring * {
+  color:#000; /* your normal text color here */
+  text-shadow:none;
+}

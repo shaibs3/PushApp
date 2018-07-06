@@ -29,8 +29,7 @@ function ShowRevContentAds(jsonData) {
         headline = data[i].headline;
         url = data[i].url;
         image = data[i].image;
-        if (i === '0')
-            console.log("correct url" + url)
+
         var node = document.createElement("LI");
         url_link = document.createElement('a');
         url_link.href = 'http://' + url.substring(2); // Insted of calling setAttribute 
@@ -60,6 +59,15 @@ function ShowRevContentAds(jsonData) {
     }
 
 }
+
+
+
+
+
+
+
+
+
 
 function sendPushNotifications(jsonData, pushApiKey) {
 
@@ -327,3 +335,5 @@ showAdsBtn.addEventListener('click', (event) => {
 
 
 })
+
+
