@@ -13,7 +13,7 @@ module.exports = {
         const Store = require('electron-store');
         const store = new Store();
 
-        const revcontentApiKey = store.get('revcontent_api_key', null);
+        const revcontentApiKey = store.get('lovemyleads_revcontent_api_key', null);
 
         if (!revcontentApiKey) {
             var dialog = remote.require('electron').dialog

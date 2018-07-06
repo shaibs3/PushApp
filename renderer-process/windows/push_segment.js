@@ -167,8 +167,8 @@ function retriveAndParseRevcontentAds(callback) {
 
     const Store = require('electron-store');
     const store = new Store();
-    const revcontentApiKey = store.get('revcontent_api_key', null);
-    const monetizeApiKey = store.get('monetize_api_key', null);
+    const revcontentApiKey = store.get('lovemyleads_revcontent_api_key', null);
+    const monetizeApiKey = store.get('monetize_revcontent_api_key', null);
     if (!revcontentApiKey) {
         var dialog = remote.require('electron').dialog
         dialog.showMessageBox({
@@ -188,7 +188,7 @@ function retriveAndParseRevcontentAds(callback) {
     if (pub_id == 3120) {
         domain = "push.lovemyleads" + section + ".com"
         apiKey = revcontentApiKey
-        pushApiKey = store.get('pushengage_api_key', null);
+        pushApiKey = store.get('lovemyleads_pushengage_api_key', null);
     }
     else {
         domain = "push.monetizeplus" + section + ".com"
@@ -254,13 +254,12 @@ function populateSegments(data) {
 function getSegments() {
 
 
-    //const segment = document.getElementById('segment-number-input').value
-
+   
 
     const Store = require('electron-store');
     const store = new Store();
 
-    const pushengageApiKey = store.get('pushengage_api_key', null);
+    const pushengageApiKey = store.get('lovemyleads_pushengage_api_key', null);
     $.ajax({
         url: 'https://api.pushengage.com/apiv1/segments',
         headers: {

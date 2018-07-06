@@ -86,7 +86,7 @@
 
 
       <div id='bSection' class="demo-wrapper">
-        <button id="bSectionToggle" class="js-container-target demo-toggle-button">Sending push with countries
+        <button id="bSectionPushBtn" class="js-container-target demo-toggle-button">Sending push with countries
           <div class="demo-meta u-avoid-clicks">
             <span class="demo-meta-divider">|</span>
           </div>
@@ -126,17 +126,6 @@
               <option> dating</option>
             </select>
           </div>
-
-
-         
-
-
-
-
-
-
-
-
           <div class="form-group row">
             <select title="Choose a widget" id="bSectionWidgetSelect" name="widget" class="selectpicker">
               <option data-hidden="true">Choose a widget</option>
@@ -147,20 +136,21 @@
           </div>
 
           <form class="form-inline row">
-              <div class="form-group mx-sm-3 mb-2">
-                  <input type="checkbox" id='schedToggle' name="bootstrapCheck" data-on="On" data-off="Off" data-toggle="toggle" data-onstyle="warning" style="width: 10px"  name="feature" />
-                  
-                </div>
-              <div class="form-group mb-2">
-                  <div class='input-group date' id='datetimepicker1' style="width: 220px">
-                      <input id='dateInput' type='text' class="form-control" disabled="true"/>
-                      <span class="input-group-addon">
-                          <span class="glyphicon glyphicon-calendar"></span>
-                      </span>
-                  </div>
-              </div>
+            <div class="form-group mx-sm-3 mb-2">
+              <input type="checkbox" id='schedulePushToggle' name="bootstrapCheck" data-on="On" data-off="Off" data-toggle="toggle" data-onstyle="warning"
+                style="width: 10px" name="feature" />
 
-            </form>
+            </div>
+            <div class="form-group mb-2">
+              <div class='input-group date' id='datetimepicker1' style="width: 220px">
+                <input id='dateInput' type='text' class="form-control" disabled="true" />
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+
+          </form>
           </br>
           <div class="form-group row">
             <div class="twoToneCenter">
@@ -175,17 +165,12 @@
               <div class="loading-bar"></div>
             </div>
 
-            <!-- <button id="segmentBtn" type="button" class="btn btn-success active">Push notifications</button> -->
-
-
           </div>
-          <ul id="bSectionpushrevContentAddsList">
-          </ul>
-          <ul id="bSectionsendStatus">
+          <ul id="bSectionAddsList">
           </ul>
           <div id="here_table">
           </div>
-          <table id="myTable" class="table table-striped table-bordered">
+          <table id="CountriesTable" class="table table-striped table-bordered">
             <thead>
               <tr>
                 <th>Country</th>
@@ -203,13 +188,6 @@
 
         </div>
       </div>
-
-
-
-
-  
-
-
     </div>
     <script type="text/javascript">
       $(function () {
@@ -218,11 +196,5 @@
     </script>
     <script type="text/javascript" src="./renderer-process/windows/push_segment.js"></script>
     <script type="text/javascript" src="./renderer-process/windows/push_countries.js"></script>
-    <script type="text/javascript">
-      require('./renderer-process/windows/push')
-      require('./renderer-process/windows/create-window')
-      require('./renderer-process/windows/manage-window')
-      require('./renderer-process/windows/using-window-events')
-    </script>
   </section>
 </template>
