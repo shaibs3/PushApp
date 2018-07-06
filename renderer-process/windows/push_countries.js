@@ -27,7 +27,7 @@ function bSectionShowRevContentAds(jsonData) {
     var image = "none"
     var img_index = 0
     var headline = "none"
-    
+
     data = jsonData.content;
     for (var i in data) {
         headline = data[i].headline;
@@ -89,6 +89,9 @@ function SchedulePush(jsonData, pushApiKey, country) {
     }
     else {
         update_status_array(country, 0, 'Fail');
+        if (semaphore == 0) {
+            sentComplete()
+        }
         return;
     }
 
@@ -123,6 +126,7 @@ function SchedulePush(jsonData, pushApiKey, country) {
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             update_status_array(this.local_country, jsonData.content.length, 'Fail');
             constants.showErrorDialog("Error type: " + errorThrown);
+
         },
         complete: function () {
             if (semaphore == 0) {
@@ -172,6 +176,9 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
     }
     else {
         update_status_array(country, 0, 'Fail');
+        if (semaphore == 0) {
+            sentComplete()
+        }
         return;
     }
 
@@ -198,16 +205,20 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
         data: data_msg,
 
         success: function (data) {
+            update_status_array(country, 0, 'Fail');
 
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             update_status_array(country, 0, 'Fail');
             constants.showErrorDialog("Please provide Api keys");
+
         },
         complete: function () {
+
             if (semaphore == 0) {
                 sentComplete()
             }
+
         }
     });
 
@@ -244,9 +255,9 @@ function bSectionGetApiCallsParams() {
 
     const Store = require('electron-store');
     const store = new Store();
-    const revcontentApiKey = store.get('lovemyleads_revcontent_api_key', null);
-    const monetizeApiKey = store.get('monetize_revcontent_api_key', null);
-    if (!revcontentApiKey || !monetizeApiKey) {
+    const loveMyleadsRevcontentApiKey = store.get('lovemyleads_revcontent_api_key', null);
+    const monetizeRevcontentApiKey = store.get('monetize_revcontent_api_key', null);
+    if (!loveMyleadsRevcontentApiKey || !monetizeRevcontentApiKey) {
         throw "missing api keys";
     }
 
@@ -258,12 +269,12 @@ function bSectionGetApiCallsParams() {
     var pushApiKey;
     if (pub_id == 3120) {
         domain = "push.lovemyleads" + section + ".com"
-        apiKey = revcontentApiKey
+        apiKey = loveMyleadsRevcontentApiKey
         pushApiKey = store.get('lovemyleads_pushengage_api_key', null);
     }
     else {
         domain = "push.monetizeplus" + section + ".com"
-        apiKey = monetizeApiKey
+        apiKey = monetizeRevcontentApiKey
         pushApiKey = store.get('monetize_pushengage_api_key', null);
     }
 
@@ -280,12 +291,12 @@ function bSectionGetApiCallsParams() {
             num_selected_countries = $('#bSectionCountrySelect option').length
         }
     }
-    return [domain, apiKey, num_selected_countries, pushApiKey, country_array, start_idx];
+    return [domain, apiKey, num_selected_countries, pushApiKey, country_array, widget, pub_id, start_idx];
 }
 
 function bSectionRetriveAndParseRevcontentAds(callback, update) {
 
-    $("#bSectionShowAdsBtn").empty();
+    $("#bSectionAddsList").empty();
     status_array_idx = 0;
 
     /* get all params for ajax call */
@@ -301,20 +312,20 @@ function bSectionRetriveAndParseRevcontentAds(callback, update) {
     let domain = params[0];
     let apiKey = params[1];
     let num_selected_countries = params[2];
-    let country_array = params[3];
-    let idx = params[4];
+    let pushApiKey = params[3];
+    let country_array = params[4];
+    let widget = params[5];
+    let pub_id = params[6];
+    let idx = params[7];
 
 
-    if(update){
+ 
         semaphore = num_selected_countries;
-    }
-    else{
-        semaphore = 0
-    }
-    
+
+
     for (; idx < num_selected_countries; idx++) {
 
-        let country = country_array[i]
+        let country = country_array[idx]
         var user_ip = countryToIp[country]
         var data = `api_key=${apiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}&user_ip=${user_ip}&tracking=manual&tracking_method=get`
 
@@ -332,26 +343,20 @@ function bSectionRetriveAndParseRevcontentAds(callback, update) {
                 callback(data, pushApiKey, this.local_country, this.local_update)
             },
             error: function (data) {
-                update_status_array(this.local_country, 0, 'Fail');
+
+
             },
             complete: function () {
-                if (semaphore == 0 && this.local_update != 0) {
-                    sentComplete()
-                }
+
             }
         });
     }
 }
 
-function update_status_array(increment, local_country, ads, status) {
+function update_status_array(local_country, ads, status) {
 
     status_array[status_array_idx] = { country: local_country, num_ads: ads, send: status };
-    if (increment) {
-        semaphore++
-    }
-    else {
-        semaphore--
-    }
+    semaphore--
     status_array_idx++;
 }
 
@@ -430,13 +435,14 @@ $("#bSectionDomainSelect").change(function () {
 
 $('#bSectionSendPushBtn').bind('click.mynamespace', function () {
     $('#img').show();
-    bSectionRetriveAndParseRevcontentAds(bSectionSendPushNotifications , 1)
+    bSectionRetriveAndParseRevcontentAds(bSectionSendPushNotifications, 1)
 });
 
 
 const bSectionshowAdsBtn = document.getElementById('bSectionShowAdsBtn')
 
 bSectionshowAdsBtn.addEventListener('click', (event) => {
+    $('#img').show();
     bSectionRetriveAndParseRevcontentAds(bSectionShowRevContentAds, 0);
 })
 

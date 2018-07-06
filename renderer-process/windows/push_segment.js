@@ -167,9 +167,9 @@ function retriveAndParseRevcontentAds(callback) {
 
     const Store = require('electron-store');
     const store = new Store();
-    const revcontentApiKey = store.get('lovemyleads_revcontent_api_key', null);
-    const monetizeApiKey = store.get('monetize_revcontent_api_key', null);
-    if (!revcontentApiKey) {
+    const loveMyleadsRevcontentApiKey = store.get('lovemyleads_revcontent_api_key', null);
+    const monetizeRevcontentApiKey = store.get('monetize_revcontent_api_key', null);
+    if (!monetizeRevcontentApiKey || !loveMyleadsRevcontentApiKey) {
         var dialog = remote.require('electron').dialog
         dialog.showMessageBox({
             message: "Please provide Api keys",
@@ -183,16 +183,16 @@ function retriveAndParseRevcontentAds(callback) {
     var pub_id = $('#domainSelect').find("option:selected").val();
     var section = $('#sectionSelect').find("option:selected").val();
     var domain;
-    var apiKey;
+    var revcontentApiKey;
     var pushApiKey;
     if (pub_id == 3120) {
         domain = "push.lovemyleads" + section + ".com"
-        apiKey = revcontentApiKey
+        revcontentApiKey = lovemyleadsRevcontentApiKey
         pushApiKey = store.get('lovemyleads_pushengage_api_key', null);
     }
     else {
         domain = "push.monetizeplus" + section + ".com"
-        apiKey = monetizeApiKey
+        revcontentApiKey = monetizeRevcontentApiKey
         pushApiKey = store.get('monetize_pushengage_api_key', null);
     }
   
@@ -200,7 +200,7 @@ function retriveAndParseRevcontentAds(callback) {
 
 
 
-    var data = `api_key=${apiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}&tracking=manual&tracking_method=get`
+    var data = `api_key=${revcontentApiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}&tracking=manual&tracking_method=get`
 
     $.ajax({
         beforeSend: function () {
