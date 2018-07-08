@@ -57,6 +57,9 @@ function bSectionShowRevContentAds(jsonData) {
 
         document.getElementById("bSectionAddsList").appendChild(node);
     }
+    status_array_idx = 0;
+    semaphore = 0;
+    $('#img').hide();
 
 }
 
@@ -152,8 +155,6 @@ function randomizeAdds(jsonData) {
 
 function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
 
-    bSectionShowRevContentAds(jsonData);
-
     if (!pushApiKey) {
         constants.showErrorDialog("Please provide Api keys");
         return;
@@ -205,7 +206,7 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
         data: data_msg,
 
         success: function (data) {
-            update_status_array(country, 0, 'Fail');
+            update_status_array(country, number_ads, 'Success');
 
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -246,7 +247,6 @@ function sentComplete() {
         ]).draw(false);
     }
 
-    var counter = 1;
     status_array_idx = 0;
     $('#img').hide();
 }
@@ -287,15 +287,17 @@ function bSectionGetApiCallsParams() {
         var opt = $('#bSectionCountrySelect').val()[0];
         if (opt === 'All') {
             start_idx = 2;
-            country_array = $('#bSectionCountrySelect option');
+            var domelts = $('#bSectionCountrySelect option');
+            country_array = $.map(domelts, function(elt, i) { return $(elt).val();});
             num_selected_countries = $('#bSectionCountrySelect option').length
         }
     }
     return [domain, apiKey, num_selected_countries, pushApiKey, country_array, widget, pub_id, start_idx];
 }
 
-function bSectionRetriveAndParseRevcontentAds(callback, update) {
+function bSectionGetAdds(callback, update) {
 
+    $('#img').show();
     $("#bSectionAddsList").empty();
     status_array_idx = 0;
 
@@ -318,11 +320,7 @@ function bSectionRetriveAndParseRevcontentAds(callback, update) {
     let pub_id = params[6];
     let idx = params[7];
 
-
- 
-        semaphore = num_selected_countries;
-
-
+    semaphore = num_selected_countries;
     for (; idx < num_selected_countries; idx++) {
 
         let country = country_array[idx]
@@ -434,16 +432,16 @@ $("#bSectionDomainSelect").change(function () {
 });
 
 $('#bSectionSendPushBtn').bind('click.mynamespace', function () {
-    $('#img').show();
-    bSectionRetriveAndParseRevcontentAds(bSectionSendPushNotifications, 1)
+    
+    bSectionGetAdds(bSectionSendPushNotifications, 1)
 });
 
 
 const bSectionshowAdsBtn = document.getElementById('bSectionShowAdsBtn')
 
 bSectionshowAdsBtn.addEventListener('click', (event) => {
-    $('#img').show();
-    bSectionRetriveAndParseRevcontentAds(bSectionShowRevContentAds, 0);
+   
+    bSectionGetAdds(bSectionShowRevContentAds, 0);
 })
 
 
@@ -454,8 +452,8 @@ $('#schedulePushToggle').change(function () {
         $('#dateInput').prop('disabled', false);
         $("#bSectionSendPushBtn").html('Scheduale push');
         $('#bSectionSendPushBtn').bind('click.mynamespace', function () {
-            $('#img').show();
-            bSectionRetriveAndParseRevcontentAds(SchedulePush, 1)
+            
+            bSectionGetAdds(SchedulePush, 1)
         });
     }
     else {
@@ -463,8 +461,8 @@ $('#schedulePushToggle').change(function () {
         $('#dateInput').prop('disabled', true);
 
         $('#bSectionSendPushBtn').bind('click.mynamespace', function () {
-            $('#img').show();
-            bSectionRetriveAndParseRevcontentAds(bSectionSendPushNotifications, 1);
+            
+            bSectionGetAdds(bSectionSendPushNotifications, 1);
         });
 
     }
@@ -482,3 +480,5 @@ $(document).ready(function () {
     $("#bSectionCountrySelect").select2({ placeholder: 'Select a country' });
     getCountries()
 })
+
+
