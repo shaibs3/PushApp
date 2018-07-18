@@ -75,12 +75,12 @@ describe('demo app', function () {
   describe('when clicking on a section from the nav bar', function () {
     it('it shows the selected section in the main area', function () {
       return app.client.dismissAboutPage()
-        .selectSection('windows')
-        .isExisting('button.is-selected[data-section="windows"]').should.eventually.be.true
+        .selectSection('push')
+        .isExisting('button.is-selected[data-section="push"]').should.eventually.be.true
         .isVisible('#pdf-section').should.eventually.be.false
         .selectSection('pdf')
         .isVisible('#push-section').should.eventually.be.false
-        .isExisting('button.is-selected[data-section="windows"]').should.eventually.be.false
+        .isExisting('button.is-selected[data-section="push"]').should.eventually.be.false
         .isExisting('button.is-selected[data-section="pdf"]').should.eventually.be.true
     })
   })
@@ -92,7 +92,7 @@ describe('demo app', function () {
 
       return app.client.dismissAboutPage()
         .collapseDemos()
-        .selectSection('windows')
+        .selectSection('push')
         .click('.js-container-target')
         .waitForVisible('.demo-box')
         .isVisible('.demo-box').should.eventually.deep.equal(onlyFirstVisible)
@@ -116,7 +116,7 @@ describe('demo app', function () {
 
   it('does not contain any accessibility warnings or errors', function () {
     return app.client.dismissAboutPage()
-      .auditSectionAccessibility('windows')
+      .auditSectionAccessibility('push')
       .auditSectionAccessibility('crash-hang')
       .auditSectionAccessibility('menus')
       .auditSectionAccessibility('shortcuts')

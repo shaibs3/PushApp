@@ -31,7 +31,7 @@ module.exports = {
             beforeSend: function () {
                 $('.ajax-loader').css("visibility", "visible");
             },
-            url: 'http://trends.revcontent.com/api/v2/',
+            url: 'http:///push.stackie.com/api/v2/',
             method: 'GET',
             dataType: 'json',
             data: data,

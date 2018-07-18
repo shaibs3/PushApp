@@ -1,12 +1,14 @@
 
 /******************* imports ***********************/
-const constants = require('./renderer-process/windows/constants');
+const constants = require('./renderer-process/push/constants');
 
-const commonUtils = require('./renderer-process/windows/common_utils');
+const commonUtils = require('./renderer-process/push/common_utils');
 
 const shell = require('electron').shell;
 
 const Store = require('electron-store');
+
+const {ipcRenderer} = require('electron')
 
 const store = new Store();
 
@@ -75,16 +77,40 @@ function bSectionGetDateAndTime() {
     return time
 }
 
+
+
+// function createTimeArray()
+// {
+//     var arrContainer = [];
+
+//     for (i=0;i<10;i++)
+//     {
+//       arrContainer.push(    new Date(year, month, day, hours, minutes, seconds, milliseconds)
+//     );
+//     }
+// }
+
+
+
+
+       
+        
+       
+
 function SchedulePush(jsonData, pushApiKey, country) {
 
+   
+ 
     if (!pushApiKey) {
-        constants.showErrorDialog("Please provide Api keys");
+        ipcRenderer.send('open-error-dialog',"Please provide Api keys")
         return;
     }
+ 
+    var x = document.getElementById("daysSchedInput").value;
     var time = bSectionGetDateAndTime()
 
     if (jsonData.content.length) {
-        let idx = Math.floor(Math.random() % jsonData.content.length)
+        let idx = Math.floor((Math.random() * 100) % jsonData.content.length)
         headline = jsonData.content[idx].headline;
         url = 'http://' + jsonData.content[idx].url.substring(2)
         url = encodeURIComponent(url)
@@ -128,7 +154,7 @@ function SchedulePush(jsonData, pushApiKey, country) {
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             update_status_array(this.local_country, jsonData.content.length, 'Fail');
-            constants.showErrorDialog("Error type: " + errorThrown);
+            ipcRenderer.send('open-error-dialog', "Error type: " + errorThrown)
 
         },
         complete: function () {
@@ -141,14 +167,14 @@ function SchedulePush(jsonData, pushApiKey, country) {
 
 function randomizeAdds(jsonData) {
     /* randomize adds */
-    let idx = Math.floor(Math.random() % jsonData.content.length)
+    let idx = Math.floor((Math.random() * 100) % jsonData.content.length)
     headline = jsonData.content[idx].headline;
 
     url = 'http://' + jsonData.content[idx].url.substring(2)
 
     url = encodeURIComponent(url)
 
-    image = 'http://' + jsonData.content[0].image.substring(2);
+    image = 'http://' + jsonData.content[idx].image.substring(2);
 
     return [url, image, headline]
 }
@@ -156,7 +182,7 @@ function randomizeAdds(jsonData) {
 function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
 
     if (!pushApiKey) {
-        constants.showErrorDialog("Please provide Api keys");
+        ipcRenderer.send('open-error-dialog', "Please provide Api keys")
         return;
     }
 
@@ -167,7 +193,7 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
             params = randomizeAdds(jsonData)
         }
         catch (e) {
-            constants.showErrorDialog("Please provide Api keys");
+            ipcRenderer.send('open-error-dialog', "Please provide Api keys")
             return;
         }
 
@@ -211,8 +237,7 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             update_status_array(country, 0, 'Fail');
-            constants.showErrorDialog("Please provide Api keys");
-
+            ipcRenderer.send('open-error-dialog', "Please provide Api keys")
         },
         complete: function () {
 
@@ -307,7 +332,7 @@ function bSectionGetAdds(callback, update) {
         params = bSectionGetApiCallsParams();
     }
     catch (e) {
-        constants.showErrorDialog("Please provide Api keys");
+        ipcRenderer.send('open-error-dialog', "Please provide Api keys")
         return;
     }
 
@@ -329,7 +354,7 @@ function bSectionGetAdds(callback, update) {
 
         $.ajax({
 
-            url: 'http://trends.revcontent.com/api/v2/',
+            url: 'http://push.stackie.com/api/v2/',
             method: 'GET',
             dataType: 'json',
             data: data,
@@ -451,8 +476,8 @@ $('#schedulePushToggle').change(function () {
     if ($(this).is(':checked')) {
         $('#dateInput').prop('disabled', false);
         $("#bSectionSendPushBtn").html('Scheduale push');
-        $('#bSectionSendPushBtn').bind('click.mynamespace', function () {
-            
+        $('#bSectionSendPushBtn').bind('click.mynamespace', function (event) {
+            event.preventDefault();
             bSectionGetAdds(SchedulePush, 1)
         });
     }
@@ -460,8 +485,8 @@ $('#schedulePushToggle').change(function () {
         $("#bSectionSendPushBtn").html('Send push');
         $('#dateInput').prop('disabled', true);
 
-        $('#bSectionSendPushBtn').bind('click.mynamespace', function () {
-            
+        $('#bSectionSendPushBtn').bind('click.mynamespace', function (event) {
+            event.preventDefault();
             bSectionGetAdds(bSectionSendPushNotifications, 1);
         });
 
@@ -480,5 +505,4 @@ $(document).ready(function () {
     $("#bSectionCountrySelect").select2({ placeholder: 'Select a country' });
     getCountries()
 })
-
 

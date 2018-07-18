@@ -1,14 +1,6 @@
 
 module.exports = {
-    showErrorDialog: function (error_msg) {
-        var dialog = remote.require('electron').dialog
-        dialog.showMessageBox({
-            message: error_msg,
-            type: "error",
-            buttons: ["OK"]
-        });
-        return;
-    },
+  
     convertMonth: function (str) {
         switch (str) {
             case 'Jan':

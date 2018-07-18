@@ -1,10 +1,10 @@
 <template class="task-template">
-  <section id="push-section" class="section js-section u-category-windows">
+  <section id="push-section" class="section js-section u-category-push">
     <header class="section-header">
       <div class="section-wrapper">
         <h1>
           <svg class="section-icon">
-            <use xlink:href="assets/img/icons.svg#icon-windows"></use>
+            <use xlink:href="assets/img/icons.svg#icon-push"></use>
           </svg>
           Push notifications
         </h1>
@@ -15,7 +15,6 @@
     </header>
 
     <div class="demo">
-
       <div id='aSection' class="demo-wrapper">
         <button id="aSectionToggle" class="js-container-target demo-toggle-button">Sending push
           <div class="demo-meta u-avoid-clicks">
@@ -36,7 +35,6 @@
           <div class="form-group row">
             <select title="Choose a section" id="sectionSelect" name="segment" class="selectpicker">
               <option data-hidden="true">Choose a section</option>
-              <option> Push </option>
               <option> health </option>
               <option> finance</option>
               <option> sweeps</option>
@@ -60,18 +58,7 @@
               <option value=2> Push Widget - 31+</option>
             </select>
           </div>
-
-
-
-
-
-
-
-
-
-
           </br>
-
           <div class="form-group row">
             <div class="twoToneCenter">
               <button id="segmentBtn" type="button" class="btn btn-primary active">Send push</button>
@@ -83,8 +70,6 @@
           </ul>
         </div>
       </div>
-
-
       <div id='bSection' class="demo-wrapper">
         <button id="bSectionPushBtn" class="js-container-target demo-toggle-button">Sending push with countries
           <div class="demo-meta u-avoid-clicks">
@@ -119,7 +104,6 @@
 
             <select title="Choose a section" id="bSectionSectionSelect" name="segment" class="selectpicker" style="width: 250px">
               <option data-hidden="true">Choose a section</option>
-              <option> Push </option>
               <option> health </option>
               <option> finance</option>
               <option> sweeps</option>
@@ -139,7 +123,6 @@
             <div class="form-group mx-sm-3 mb-2">
               <input type="checkbox" id='schedulePushToggle' name="bootstrapCheck" data-on="On" data-off="Off" data-toggle="toggle" data-onstyle="warning"
                 style="width: 10px" name="feature" />
-
             </div>
             <div class="form-group mb-2">
               <div class='input-group date' id='datetimepicker1' style="width: 220px">
@@ -149,6 +132,17 @@
                 </span>
               </div>
             </div>
+
+
+            <div class="form-group mx-sm-3 mb-2">
+              Number of days
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+              <input id='daysSchedInput' class="form-control" id="exampleInputEmail1" value='1' style="width: 50px">
+
+            </div>
+
+
 
           </form>
           </br>
@@ -169,6 +163,8 @@
           <ul id="bSectionAddsList">
           </ul>
           <div id="here_table">
+          </div>
+          <div id="sign">
           </div>
           <table id="CountriesTable" class="table table-striped table-bordered">
             <thead>
@@ -194,7 +190,7 @@
         $('#datetimepicker1').datetimepicker();
       });
     </script>
-    <script type="text/javascript" src="./renderer-process/windows/push_segment.js"></script>
-    <script type="text/javascript" src="./renderer-process/windows/push_countries.js"></script>
+    <script type="text/javascript" src="./renderer-process/push/push_segment.js"></script>
+    <script type="text/javascript" src="./renderer-process/push/push_countries.js"></script>
   </section>
 </template>

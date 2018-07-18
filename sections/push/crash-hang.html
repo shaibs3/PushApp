@@ -1,9 +1,9 @@
 <template class="task-template">
-  <section id="crash-hang-section" class="section js-section u-category-windows">
+  <section id="crash-hang-section" class="section js-section u-category-push">
     <header class="section-header">
       <div class="section-wrapper">
         <h1>
-          <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-windows"></use></svg>
+          <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-push"></use></svg>
           Handling Window Crashes and Hangs
         </h1>
         <h3>The <code>BrowserWindow</code> module will emit events when the renderer process crashes or hangs. You can listen for these events and give users the chance to reload, wait or close that window.</h3>
@@ -25,7 +25,7 @@
           <p>The window is listening for the crash event and when the event occurs it prompts the user with two options: reload or close.</p>
 
           <h5>Renderer Process</h5>
-          <pre><code data-path="renderer-process/windows/process-crash.js"></code></pre>
+          <pre><code data-path="renderer-process/push/process-crash.js"></code></pre>
         </div>
       </div>
     </div>
@@ -43,7 +43,7 @@
           <p>The window is listening for the process to become officially unresponsive (this can take up to 30 seconds). When this event occurs it prompts the user with two options: reload or close.</p>
 
           <h5>Renderer Process</h5>
-          <pre><code data-path="renderer-process/windows/process-hang.js"></code></pre>
+          <pre><code data-path="renderer-process/push/process-hang.js"></code></pre>
 
           <div class="demo-protip">
             <h2>ProTip</h2>
@@ -60,8 +60,8 @@
 
 
     <script type="text/javascript">
-      require('./renderer-process/windows/process-crash')
-      require('./renderer-process/windows/process-hang')
+      require('./renderer-process/push/process-crash')
+      require('./renderer-process/push/process-hang')
     </script>
 
   </section>

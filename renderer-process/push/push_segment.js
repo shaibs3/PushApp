@@ -187,7 +187,7 @@ function retriveAndParseRevcontentAds(callback) {
     var pushApiKey;
     if (pub_id == 3120) {
         domain = "push.lovemyleads" + section + ".com"
-        revcontentApiKey = lovemyleadsRevcontentApiKey
+        revcontentApiKey = loveMyleadsRevcontentApiKey
         pushApiKey = store.get('lovemyleads_pushengage_api_key', null);
     }
     else {
@@ -207,7 +207,7 @@ function retriveAndParseRevcontentAds(callback) {
             sendBtn.innerHTML = "Signing In";
             sendBtn.classList.add('spinning');
         },
-        url: 'http://trends.revcontent.com/api/v2/',
+        url: 'http:///push.stackie.com/api/v2/',
         method: 'GET',
         dataType: 'json',
         data: data,
