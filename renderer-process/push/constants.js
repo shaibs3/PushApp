@@ -119,7 +119,8 @@ module.exports = {
         "Ecuador": "23.57.160.1",
 
         "Egypt": "82.201.128.4",
-
+        
+        "East Timor": "180.189.160.1",
 
         "El Salvador": "57.75.192.1",
 
@@ -180,6 +181,8 @@ module.exports = {
 
         "Hungary": "5.204.0.1",
 
+        "Iceland" : "31.209.192.1",
+
         "India": "120.56.0.6",
 
         "Indonesia": "152.118.0.6",
@@ -189,6 +192,8 @@ module.exports = {
         "Iraq": "37.237.254.8",
 
         "Ireland": "5.83.240.0",
+
+        "Isle of Man": "66.84.66.2",
 
         "Israel": "5.28.167.125",
 
@@ -250,8 +255,12 @@ module.exports = {
 
         "Mauritius": "41.76.40.0",
 
+        "Mayotte":  "80.8.204.0",
+
         "Mexico": "159.16.0.5",
 
+        "Monaco": "195.78.0.1",
+        
         "Mongolia": "27.123.212.0",
 
         "Montenegro": "31.184.234.0",
@@ -316,6 +325,8 @@ module.exports = {
 
         "Republic of the Congo": "31.209.128.0",
 
+        "Réunion": "41.213.128.36",
+
         "Romania": "5.2.128.0",
 
         "Russia": "87.248.224.7",
@@ -326,9 +337,13 @@ module.exports = {
 
         "Saint Lucia": "23.178.192.0",
 
+        "Saint Martin" : "74.112.232.1",
+
         "Saint Vincent and the Grenadines": "57.91.160.0",
 
         "Samoa": "43.241.164.0",
+
+        "São Tomé and Príncipe": "57.84.128.0",
 
         "Saudi Arabia": "2.88.0.0",
 
@@ -407,6 +422,8 @@ module.exports = {
         "United States": "21.56.9.41",
 
         "Uruguay": "179.24.0.8",
+
+        "Uzbekistan" : "82.215.64.1",
 
         "Vanuatu": "43.240.140.0",
 
