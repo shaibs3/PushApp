@@ -8,7 +8,7 @@ const shell = require('electron').shell;
 
 const Store = require('electron-store');
 
-const {ipcRenderer} = require('electron')
+const { ipcRenderer } = require('electron')
 
 const store = new Store();
 
@@ -232,12 +232,38 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
         data: data_msg,
 
         success: function (data) {
+            // let notifiction_id = data.notification_id;
+
+            // var d = new Date();
+            // var n = d.getTime();
+
+            // var obj = {
+            //     timestamp: n,
+            //     impressionurl: impression,
+            //     notificationId: notifiction_id
+            // }
+
+            // fs.readFile("impression.json", function (err, fileData) {
+            //     if (err) {
+            //         return console.log(err);
+            //     }
+            //     else {
+            //         var json = JSON.parse(fileData)
+            //         json.impressions.push(obj); //add some data
+            //         fs.writeFile("impression.json", JSON.stringify(json), 'utf8', function (err) {
+            //             if (err) throw err;
+            //             console.log('complete');
+            //         });
+
+            //     }
+            // })
+
             update_status_array(country, number_ads, 'Success');
 
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             update_status_array(country, 0, 'Fail');
-            ipcRenderer.send('open-error-dialog', "Please provide Api keys")
+            ipcRenderer.send('open-error-dialog', errorThrown)
         },
         complete: function () {
 
@@ -313,7 +339,7 @@ function bSectionGetApiCallsParams() {
         if (opt === 'All') {
             start_idx = 2;
             var domelts = $('#bSectionCountrySelect option');
-            country_array = $.map(domelts, function(elt, i) { return $(elt).val();});
+            country_array = $.map(domelts, function (elt, i) { return $(elt).val(); });
             num_selected_countries = $('#bSectionCountrySelect option').length
         }
     }
@@ -332,7 +358,7 @@ function bSectionGetAdds(callback, update) {
         params = bSectionGetApiCallsParams();
     }
     catch (e) {
-        ipcRenderer.send('open-error-dialog', "Please provide Api keys")
+        ipcRenderer.send('open-error-dialog', e)
         return;
     }
 
@@ -344,12 +370,24 @@ function bSectionGetAdds(callback, update) {
     let widget = params[5];
     let pub_id = params[6];
     let idx = params[7];
+    let timeout = 0;
+    let multiply = 60000;
 
-    semaphore = num_selected_countries;
+
+    semaphore = num_selected_countries - idx;
     for (; idx < num_selected_countries; idx++) {
+        if (idx % 18 === 0 && idx != 0) {
+            timeout++;
+        }
 
         let country = country_array[idx]
+        if (!countryToIp.hasOwnProperty(country)) {
+            update_status_array(country, 0, 'Fail');
+            continue;
+        }
         var user_ip = countryToIp[country]
+
+
         var data = `api_key=${apiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}&user_ip=${user_ip}&tracking=manual&tracking_method=get`
 
         $.ajax({
@@ -360,16 +398,24 @@ function bSectionGetAdds(callback, update) {
             data: data,
             local_country: country,
             local_update: update,
+            local_timeout: timeout,
+            local_multiply: multiply,
 
             success: function (data) {
                 /* send a push to all users in this country */
-                callback(data, pushApiKey, this.local_country, this.local_update)
+
+                setTimeout(function () {
+                    callback(data, pushApiKey, country, update)
+                }, this.local_timeout * this.local_multiply)
+
             },
             error: function (data) {
-
-
+                update_status_array(country, 0, 'Fail');
             },
             complete: function () {
+                if (semaphore == 0) {
+                    sentComplete()
+                }
 
             }
         });
@@ -385,10 +431,31 @@ function update_status_array(local_country, ads, status) {
 
 function populateCountries(data) {
 
+
     /* populate countries */
     let countries = data.data.countries;
     let num_countries = countries.length
     let countriesSelect = document.getElementById('bSectionCountrySelect');
+
+    $('#bSectionCountrySelect')
+    .find('option')
+    .remove()
+
+    var opt = document.createElement('option');
+    opt.value = "Choose a Country";
+    opt.innerHTML = "Choose a Country";
+    opt.hidden = true;
+    countriesSelect.appendChild(opt);
+
+    var opt = document.createElement('option');
+    opt.value = "All";
+    opt.innerHTML = "All";
+    countriesSelect.appendChild(opt);
+
+  
+
+
+
 
     for (i = 0; i < num_countries; ++i) {
         var opt = document.createElement('option');
