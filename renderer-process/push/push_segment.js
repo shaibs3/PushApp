@@ -115,6 +115,7 @@ function sendPushNotifications(jsonData, pushApiKey) {
         });
         return;
     }
+    let impression = jsonData.impression
     var segment_id = $('#segmentSelect').find("option:selected").val();
     var data_msg =
         "notification_title="
@@ -125,7 +126,9 @@ function sendPushNotifications(jsonData, pushApiKey) {
         + image
         +"&include_segments[0]="
         + segment_id
-        + "&notification_message=";
+        + "&notification_message="
+        + "&view_url="
+        + impression;
 
   
 

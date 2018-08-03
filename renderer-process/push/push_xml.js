@@ -1,51 +1,68 @@
 
 /******************* imports ***********************/
-const constants = require('./renderer-process/push/constants');
 
-const commonUtils = require('./renderer-process/push/common_utils');
 
-const shell = require('electron').shell;
+const CsectionConstans = require('./renderer-process/push/constants');
+const CsectionCommonUtils = require('./renderer-process/push/common_utils');
 
-const Store = require('electron-store');
+const CsectionShell = require('electron').shell;
 
-const { ipcRenderer } = require('electron')
+const CsectionStore = require('electron-store');
 
-const store = new Store();
+const CsectionipcRenderer = require('electron').ipcRenderer
+
+const Csectionstore = new CsectionStore();
 
 /******************* local variables ***********************/
-var semaphore = 0;
+var cSectionSemaphore = 0;
 
-let status_array = [];
+let cSectionStatus_array = [];
 
-let status_array_idx = 0;
+let cSectionStatus_array_idx = 0;
 
-let countryToIp = constants.countryToIp;
+let cSectionCountryToIp = CsectionConstans.countryToIp;
 
 /******************* module functions ***********************/
 
-function bSectionShowRevContentAds(jsonData) {
+function cSectionShowRevContentAds(xml) {
 
-    var url = "none"
-    var image = "none"
-    var img_index = 0
-    var headline = "none"
+    let url = "none"
+    let image = "none"
+    let img_index = 0
+    let headline = "none"
 
-    data = jsonData.content;
-    for (var i in data) {
-        headline = data[i].headline;
-        url = data[i].url;
-        image = data[i].image;
+    let number_ads = 0;
+    $(xml).find('item').each(function () {
+        number_ads++
+
+
+    });
+
+
+
+    let impression;
+    if (!number_ads) {
+
+        return;
+    }
+
+    $(xml).find('item').each(function () {
+        headline = $(this).find("title").text()
+        url = $(this).find("link").text()
+        image = $(this).find("image_url").text()
+        description = $(this).find("description").text()
+
 
         var node = document.createElement("LI");
         url_link = document.createElement('a');
-        url_link.href = 'http://' + url.substring(2); // Insted of calling setAttribute 
+        url_link.href = url; // Insted of calling setAttribute 
         url_link.innerHTML = headline // <a>INNER_TEXT</a>
         node.appendChild(url_link); // Append the link to the div
         br1 = document.createElement('br');
         node.appendChild(br1);
-        var img_str = 'http://' + image.substring(2)
+        var img_str =  image
         img_link = document.createElement('a');
-        img_link.href = image.substring(2); // Insted of calling setAttribute 
+        img_link.href = image; // Insted of calling setAttribute 
         img_link.innerHTML = "Image" // <a>INNER_TEXT</a>
         //node.appendChild(img_link); // Append the link to the div
         img_index++;
@@ -56,20 +73,29 @@ function bSectionShowRevContentAds(jsonData) {
             'title': 'JSFiddle logo',
             'width': 250
         }).appendTo(node);
+        document.getElementById("cSectionAddsList").appendChild(node);
 
-        document.getElementById("bSectionAddsList").appendChild(node);
-    }
-    status_array_idx = 0;
-    semaphore = 0;
+    });
+
+
+
+
+
+   
+
+    
+
+    cSectionStatus_array_idx = 0;
+    cSectionSemaphore = 0;
     $('#img').hide();
 
 }
 
-function bSectionGetDateAndTime() {
-    let datePicker = $('#datetimepicker1').data('DateTimePicker').date()
+function cSectionGetDateAndTime() {
+    let datePicker = $('#datetimepicker2').data('DateTimePicker').date()
     let time_str = datePicker._d + ""
     var array = time_str.split(" ");
-    var month = commonUtils.convertMonth(array[1])
+    var month = CsectionCommonUtils.convertMonth(array[1])
     var day = array[2]
     var year = array[3]
     var hourMinSec = array[4]
@@ -93,21 +119,21 @@ function bSectionGetDateAndTime() {
 
 
 
-       
-        
-       
+
+
+
 
 function SchedulePush(jsonData, pushApiKey, country) {
 
-   
- 
+
+
     if (!pushApiKey) {
-        ipcRenderer.send('open-error-dialog',"Please provide Api keys")
+        CsectionipcRenderer.send('open-error-dialog', "Please provide Api keys")
         return;
     }
- 
+
     var x = document.getElementById("daysSchedInput").value;
-    var time = bSectionGetDateAndTime()
+    var time = cSectionGetDateAndTime()
 
     if (jsonData.content.length) {
         let idx = Math.floor((Math.random() * 100) % jsonData.content.length)
@@ -118,13 +144,12 @@ function SchedulePush(jsonData, pushApiKey, country) {
     }
     else {
         update_status_array(country, 0, 'Fail');
-        if (semaphore == 0) {
+        if (cSectionSemaphore == 0) {
             sentComplete()
         }
         return;
     }
 
-    let impression =  'http://' + jsonData.impression.substring(2)
     var data_msg =
         "notification_title="
         + headline
@@ -138,8 +163,6 @@ function SchedulePush(jsonData, pushApiKey, country) {
         + "&notification_type=later"
         + "&valid_from_utc="
         + time
-        + "&view_url="
-        + impression
 
     $.ajax({
         url: 'https://api.pushengage.com/apiv1/notifications',
@@ -157,11 +180,11 @@ function SchedulePush(jsonData, pushApiKey, country) {
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             update_status_array(this.local_country, jsonData.content.length, 'Fail');
-            ipcRenderer.send('open-error-dialog', "Error type: " + errorThrown)
+            CsectionipcRenderer.send('open-error-dialog', "Error type: " + errorThrown)
 
         },
         complete: function () {
-            if (semaphore == 0) {
+            if (cSectionSemaphore == 0) {
                 sentComplete()
             }
         }
@@ -179,39 +202,60 @@ function randomizeAdds(jsonData) {
 
     image = 'http://' + jsonData.content[idx].image.substring(2);
 
-    return [url, image, headline]
+    impression = jsonData.impression;
+
+    return [url, image, headline, impression]
 }
 
-function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
+function cSectionSendPushNotifications(xml, pushApiKey, country) {
 
     if (!pushApiKey) {
-        ipcRenderer.send('open-error-dialog', "Please provide Api keys")
+        CsectionipcRenderer.send('open-error-dialog', "Please provide Api keys")
         return;
     }
 
-    let number_ads = jsonData.content.length
+    let number_ads = 0;
+    $(xml).find('item').each(function () {
+        number_ads++
+
+
+    });
+
+    let url;
+    let image;
+    let headline;
+    let impression;
+
 
     if (number_ads) {
-        try {
-            params = randomizeAdds(jsonData)
-        }
-        catch (e) {
-            ipcRenderer.send('open-error-dialog', "Please provide Api keys")
-            return;
-        }
+        // try {
+        //     params = randomizeAdds(jsonData)
+        // }
+        // catch (e) {
+        //     CsectionipcRenderer.send('open-error-dialog', "Please provide Api keys")
+        //     return;
+        // }
 
-        let url = params[0];
-        let image = params[1];
-        let headline = params[2];
+       
+        $(xml).find('item').each(function () {
+            headline = $(this).find("title").text()
+            url = $(this).find("link").text()
+            image = $(this).find("image_url").text()
+            description = $(this).find("description").text()
+
+
+        });
+
+
     }
     else {
         update_status_array(country, 0, 'Fail');
-        if (semaphore == 0) {
+        if (cSectionSemaphore == 0) {
             sentComplete()
         }
         return;
     }
-    let impression =  'http://' + jsonData.impression.substring(2)
+
     var data_msg =
         "notification_title="
         + headline
@@ -221,8 +265,7 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
         + image
         + "&include_countries[0]="
         + country
-        + "&view_url="
-        + impression
+        + "&notification_message=";
 
     $.ajax({
         url: 'https://api.pushengage.com/apiv1/notifications',
@@ -267,11 +310,11 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             update_status_array(country, 0, 'Fail');
-            ipcRenderer.send('open-error-dialog', errorThrown)
+            CsectionipcRenderer.send('open-error-dialog', errorThrown)
         },
         complete: function () {
 
-            if (semaphore == 0) {
+            if (cSectionSemaphore == 0) {
                 sentComplete()
             }
 
@@ -283,7 +326,7 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
 
 function sentComplete() {
 
-    $("#bSectionAddsList").empty();
+    $("#cSectionAddsList").empty();
 
     let i = 0;
 
@@ -293,76 +336,76 @@ function sentComplete() {
     t.clear()
         .draw();
 
-    for (; i < status_array_idx; i++) {
-        let num_ads = "" + status_array[i].num_ads
+    for (; i < cSectionStatus_array_idx; i++) {
+        let num_ads = "" + cSectionStatus_array[i].num_ads
         t.row.add([
-            status_array[i].country,
+            cSectionStatus_array[i].country,
             num_ads,
-            status_array[i].send,
+            cSectionStatus_array[i].send,
         ]).draw(false);
     }
 
-    status_array_idx = 0;
+    cSectionStatus_array_idx = 0;
     $('#img').hide();
 }
 
-function bSectionGetApiCallsParams() {
+function cSectionGetApiCallsParams() {
 
-    const Store = require('electron-store');
-    const store = new Store();
-    const loveMyleadsRevcontentApiKey = store.get('lovemyleads_revcontent_api_key', null);
-    const monetizeRevcontentApiKey = store.get('monetize_revcontent_api_key', null);
+    const CsectionStore = require('electron-store');
+    const Csectionstore = new CsectionStore();
+    const loveMyleadsRevcontentApiKey = Csectionstore.get('lovemyleads_revcontent_api_key', null);
+    const monetizeRevcontentApiKey = Csectionstore.get('monetize_revcontent_api_key', null);
     if (!loveMyleadsRevcontentApiKey || !monetizeRevcontentApiKey) {
         throw "missing api keys";
     }
 
-    var widget_idx = $('#bSectionWidgetSelect').find("option:selected").val();
-    var pub_id = $('#bSectionDomainSelect').find("option:selected").val();
-    var section = $('#bSectionSectionSelect').find("option:selected").val();
+    var widget_idx = $('#cSectionWidgetSelect').find("option:selected").val();
+    var pub_id = $('#cSectionDomainSelect').find("option:selected").val();
+    var section = $('#cSectionSectionSelect').find("option:selected").val();
     var domain;
     var apiKey;
     var pushApiKey;
     if (pub_id == 3120) {
         domain = "push.lovemyleads" + section + ".com"
         apiKey = loveMyleadsRevcontentApiKey
-        pushApiKey = store.get('lovemyleads_pushengage_api_key', null);
+        pushApiKey = Csectionstore.get('lovemyleads_pushengage_api_key', null);
     }
     else {
         domain = "push.monetizeplus" + section + ".com"
         apiKey = monetizeRevcontentApiKey
-        pushApiKey = store.get('monetize_pushengage_api_key', null);
+        pushApiKey = Csectionstore.get('monetize_pushengage_api_key', null);
     }
 
     var widget = domainMaps[domain][widget_idx];
 
-    let num_selected_countries = $('#bSectionCountrySelect').val().length
-    let country_array = $('#bSectionCountrySelect').val();
+    let num_selected_countries = $('#cSectionCountrySelect').val().length
+    let country_array = $('#cSectionCountrySelect').val();
     let start_idx = 0;
     if (num_selected_countries == 1) {
-        var opt = $('#bSectionCountrySelect').val()[0];
+        var opt = $('#cSectionCountrySelect').val()[0];
         if (opt === 'All') {
             start_idx = 2;
-            var domelts = $('#bSectionCountrySelect option');
+            var domelts = $('#cSectionCountrySelect option');
             country_array = $.map(domelts, function (elt, i) { return $(elt).val(); });
-            num_selected_countries = $('#bSectionCountrySelect option').length
+            num_selected_countries = $('#cSectionCountrySelect option').length
         }
     }
     return [domain, apiKey, num_selected_countries, pushApiKey, country_array, widget, pub_id, start_idx];
 }
 
-function bSectionGetAdds(callback, update) {
+function cSectionGetAdds(callback, update) {
 
     $('#img').show();
-    $("#bSectionAddsList").empty();
-    status_array_idx = 0;
+    $("#cSectionAddsList").empty();
+    cSectionStatus_array_idx = 0;
 
     /* get all params for ajax call */
     var params = new Array();
     try {
-        params = bSectionGetApiCallsParams();
+        params = cSectionGetApiCallsParams();
     }
     catch (e) {
-        ipcRenderer.send('open-error-dialog', e)
+        CsectionipcRenderer.send('open-error-dialog', e)
         return;
     }
 
@@ -378,46 +421,47 @@ function bSectionGetAdds(callback, update) {
     let multiply = 60000;
 
 
-    semaphore = num_selected_countries - idx;
+    cSectionSemaphore = num_selected_countries - idx;
     for (; idx < num_selected_countries; idx++) {
         if (idx % 18 === 0 && idx != 0) {
             timeout++;
         }
 
         let country = country_array[idx]
-        if (!countryToIp.hasOwnProperty(country)) {
+        if (!cSectionCountryToIp.hasOwnProperty(country)) {
             update_status_array(country, 0, 'Fail');
             continue;
         }
-        var user_ip = countryToIp[country]
+        var user_ip = cSectionCountryToIp[country]
 
 
-        var data = `api_key=${apiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}&user_ip=${user_ip}&tracking=manual&tracking_method=get`
-
+        var data = null
         $.ajax({
 
-            url: 'http://push.stackie.com/api/v2/',
+            url: 'http://push.zeropark.com/br/1ff08e40-94cf-11e8-9a4d-0ae8b840b174?ua=Mozilla/5.0%20(Linux;%20Android%204.0.4;%20Galaxy%20Nexus%20Build/IMM76B)%20AppleWebKit/535.19%20(KHTML,%20like%20Gecko)%20Chrome/18.0.1025.133%20Mobile%20Safari/535.19&ip=21.56.9.41 ',
             method: 'GET',
-            dataType: 'json',
+            dataType: 'xml',
             data: data,
             local_country: country,
             local_update: update,
             local_timeout: timeout,
             local_multiply: multiply,
 
-            success: function (data) {
+            success: function (xml) {
+
+
                 /* send a push to all users in this country */
 
                 setTimeout(function () {
-                    callback(data, pushApiKey, country, update)
+                    callback(xml, pushApiKey, country, update)
                 }, this.local_timeout * this.local_multiply)
 
             },
             error: function (data) {
-                update_status_array(country, 0, 'Fail');
+                // update_status_array(country, 0, 'Fail');
             },
             complete: function () {
-                if (semaphore == 0) {
+                if (cSectionSemaphore == 0) {
                     sentComplete()
                 }
 
@@ -428,9 +472,9 @@ function bSectionGetAdds(callback, update) {
 
 function update_status_array(local_country, ads, status) {
 
-    status_array[status_array_idx] = { country: local_country, num_ads: ads, send: status };
-    semaphore--
-    status_array_idx++;
+    cSectionStatus_array[cSectionStatus_array_idx] = { country: local_country, num_ads: ads, send: status };
+    cSectionSemaphore--
+    cSectionStatus_array_idx++;
 }
 
 function populateCountries(data) {
@@ -439,11 +483,11 @@ function populateCountries(data) {
     /* populate countries */
     let countries = data.data.countries;
     let num_countries = countries.length
-    let countriesSelect = document.getElementById('bSectionCountrySelect');
+    let countriesSelect = document.getElementById('cSectionCountrySelect');
 
-    $('#bSectionCountrySelect')
-    .find('option')
-    .remove()
+    $('#cSectionCountrySelect')
+        .find('option')
+        .remove()
 
     var opt = document.createElement('option');
     opt.value = "Choose a Country";
@@ -456,7 +500,7 @@ function populateCountries(data) {
     opt.innerHTML = "All";
     countriesSelect.appendChild(opt);
 
-  
+
 
 
 
@@ -468,23 +512,23 @@ function populateCountries(data) {
         countriesSelect.appendChild(opt);
     }
 
-    $('#bSectionCountrySelect').trigger('change');
+    $('#cSectionCountrySelect').trigger('change');
 }
 
 function getCountries() {
 
 
-    const Store = require('electron-store');
-    const store = new Store();
+    const CsectionStore = require('electron-store');
+    const Csectionstore = new CsectionStore();
 
     /* get the relevant api key (either monetize or loveMyLeads) */
     var pushengageApiKey;
-    var pub_id = $('#bSectionDomainSelect').find("option:selected").val();
+    var pub_id = $('#cSectionDomainSelect').find("option:selected").val();
     if (pub_id == 3120) {
-        pushengageApiKey = store.get('lovemyleads_pushengage_api_key', null);
+        pushengageApiKey = Csectionstore.get('lovemyleads_pushengage_api_key', null);
     }
     else {
-        pushengageApiKey = store.get('monetize_pushengage_api_key', null);
+        pushengageApiKey = Csectionstore.get('monetize_pushengage_api_key', null);
     }
 
     $.ajax({
@@ -515,50 +559,50 @@ function getCountries() {
 
 /******************* callbacks ***********************/
 
-const bSectionPushBtn = document.getElementById('bSectionPushBtn')
-bSectionPushBtn.addEventListener('click', (event) => {
+const cSectionPushBtn = document.getElementById('cSectionPushBtn')
+cSectionPushBtn.addEventListener('click', (event) => {
 
 })
 
 
-$("#bSectionDomainSelect").change(function () {
-    var selected = $('#bSectionDomainSelect option:selected').val();
+$("#cSectionDomainSelect").change(function () {
+    var selected = $('#cSectionDomainSelect option:selected').val();
     getCountries()
 
 });
 
-$('#bSectionSendPushBtn').bind('click.mynamespace', function () {
-    
-    bSectionGetAdds(bSectionSendPushNotifications, 1)
+$('#cSectionSendPushBtn').bind('click.mynamespace', function () {
+
+    cSectionGetAdds(cSectionSendPushNotifications, 1)
 });
 
 
-const bSectionshowAdsBtn = document.getElementById('bSectionShowAdsBtn')
+const cSectionshowAdsBtn = document.getElementById('cSectionShowAdsBtn')
 
-bSectionshowAdsBtn.addEventListener('click', (event) => {
-   
-    bSectionGetAdds(bSectionShowRevContentAds, 0);
+cSectionshowAdsBtn.addEventListener('click', (event) => {
+
+    cSectionGetAdds(cSectionShowRevContentAds, 0);
 })
 
 
 $('#schedulePushToggle').change(function () {
 
-    $('#bSectionSendPushBtn').unbind('click.mynamespace');
+    $('#cSectionSendPushBtn').unbind('click.mynamespace');
     if ($(this).is(':checked')) {
         $('#dateInput').prop('disabled', false);
-        $("#bSectionSendPushBtn").html('Scheduale push');
-        $('#bSectionSendPushBtn').bind('click.mynamespace', function (event) {
+        $("#cSectionSendPushBtn").html('Scheduale push');
+        $('#cSectionSendPushBtn').bind('click.mynamespace', function (event) {
             event.preventDefault();
-            bSectionGetAdds(SchedulePush, 1)
+            cSectionGetAdds(SchedulePush, 1)
         });
     }
     else {
-        $("#bSectionSendPushBtn").html('Send push');
+        $("#cSectionSendPushBtn").html('Send push');
         $('#dateInput').prop('disabled', true);
 
-        $('#bSectionSendPushBtn').bind('click.mynamespace', function (event) {
+        $('#cSectionSendPushBtn').bind('click.mynamespace', function (event) {
             event.preventDefault();
-            bSectionGetAdds(bSectionSendPushNotifications, 1);
+            cSectionGetAdds(cSectionSendPushNotifications, 1);
         });
 
     }
@@ -566,14 +610,66 @@ $('#schedulePushToggle').change(function () {
 
 $(document).on('click', 'a[href^="http"]', function (event) {
     event.preventDefault();
-    shell.openExternal(this.href);
+    CsectionShell.openExternal(this.href);
 });
 
 $(document).ready(function () {
     /*initiallize widgets */
     $('#CountriesTable').DataTable();
     $('#CountriesTable').hide();
-    $("#bSectionCountrySelect").select2({ placeholder: 'Select a country' });
+    $("#cSectionCountrySelect").select2({ placeholder: 'Select a country' });
     getCountries()
 })
 
+// var fs = require('fs');
+
+
+
+
+// var fs = require('fs');
+// if (fs.existsSync("impression.json")) {
+//     console.log('exist');
+// }
+// else {
+//     var obj = {
+//         impressions: []
+//     };
+//     var json = JSON.stringify(obj);
+//     fs.writeFile('impression.json', json, 'utf8', function (err) {
+//         if (err) throw err;
+//         console.log('complete');
+//     });
+
+
+// }
+
+
+
+
+
+// function aggregateImpressions()
+// {
+//     fs.readFile("impression.json", function (err, fileData) {
+//         if (err) {
+//             return console.log(err);
+//         }
+//         else {
+//             var d = new Date();
+//             var curr_time = d.getTime();
+//             var json = JSON.parse(fileData)
+
+
+//                 for (var i =  json.impressions.length - 1; i >= 0; i--) {
+//                     var pass_time = curr_time - json.impressions[i].timestamp;
+//                     if (pass_time/ 10000000 >=1)
+//                     json.impressions.splice(i, 1);
+//                     }
+//                 }
+
+//               }                  
+//     )
+//     setTimeout(function () {
+//         aggregateImpressions()}, 2000)
+// }
+// setTimeout(function () {
+//     aggregateImpressions()}, 2000)
