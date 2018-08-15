@@ -38,12 +38,12 @@ function bSectionShowRevContentAds(jsonData) {
 
         var node = document.createElement("LI");
         url_link = document.createElement('a');
-        url_link.href = 'http://' + url.substring(2); // Insted of calling setAttribute 
+        url_link.href = 'https://' + url.substring(2); // Insted of calling setAttribute 
         url_link.innerHTML = headline // <a>INNER_TEXT</a>
         node.appendChild(url_link); // Append the link to the div
         br1 = document.createElement('br');
         node.appendChild(br1);
-        var img_str = 'http://' + image.substring(2)
+        var img_str = 'https://' + image.substring(2)
         img_link = document.createElement('a');
         img_link.href = image.substring(2); // Insted of calling setAttribute 
         img_link.innerHTML = "Image" // <a>INNER_TEXT</a>
@@ -112,9 +112,9 @@ function SchedulePush(jsonData, pushApiKey, country) {
     if (jsonData.content.length) {
         let idx = Math.floor((Math.random() * 100) % jsonData.content.length)
         headline = jsonData.content[idx].headline;
-        url = 'http://' + jsonData.content[idx].url.substring(2)
+        url = 'https://' + jsonData.content[idx].url.substring(2)
         url = encodeURIComponent(url)
-        image = 'http://' + jsonData.content[idx].image.substring(2);
+        image = 'https://' + jsonData.content[idx].image.substring(2);
     }
     else {
         update_status_array(country, 0, 'Fail');
@@ -124,7 +124,8 @@ function SchedulePush(jsonData, pushApiKey, country) {
         return;
     }
 
-    let impression =  'http://' + jsonData.impression.substring(2)
+    let impression =  'https://' + jsonData.impression.substring(2)
+    impression = encodeURIComponent(impression)
     var data_msg =
         "notification_title="
         + headline
@@ -168,16 +169,35 @@ function SchedulePush(jsonData, pushApiKey, country) {
     });
 }
 
+function get_short_url(long_url, func)
+{
+    $.getJSON(
+        "http://api.bitly.com/v3/shorten?callback=?", 
+        { 
+            "format": "json",
+            "apiKey": "R_1c53c42b7972490eb1ed4e196c2d0210",
+            "login": "o_2rpojplvkg",
+            "longUrl": long_url
+        },
+        function(response)
+        {
+            func(response.data.url);
+        }
+    );
+}
+
+
+
 function randomizeAdds(jsonData) {
     /* randomize adds */
     let idx = Math.floor((Math.random() * 100) % jsonData.content.length)
     headline = jsonData.content[idx].headline;
 
-    url = 'http://' + jsonData.content[idx].url.substring(2)
+    url = 'https://' + jsonData.content[idx].url.substring(2)
 
     url = encodeURIComponent(url)
 
-    image = 'http://' + jsonData.content[idx].image.substring(2);
+    image = 'https://' + jsonData.content[idx].image.substring(2);
 
     return [url, image, headline]
 }
@@ -236,31 +256,6 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
         data: data_msg,
 
         success: function (data) {
-            // let notifiction_id = data.notification_id;
-
-            // var d = new Date();
-            // var n = d.getTime();
-
-            // var obj = {
-            //     timestamp: n,
-            //     impressionurl: impression,
-            //     notificationId: notifiction_id
-            // }
-
-            // fs.readFile("impression.json", function (err, fileData) {
-            //     if (err) {
-            //         return console.log(err);
-            //     }
-            //     else {
-            //         var json = JSON.parse(fileData)
-            //         json.impressions.push(obj); //add some data
-            //         fs.writeFile("impression.json", JSON.stringify(json), 'utf8', function (err) {
-            //             if (err) throw err;
-            //             console.log('complete');
-            //         });
-
-            //     }
-            // })
 
             update_status_array(country, number_ads, 'Success');
 
@@ -396,7 +391,7 @@ function bSectionGetAdds(callback, update) {
 
         $.ajax({
 
-            url: 'http://push.stackie.com/api/v2/',
+            url: 'https://push.stackie.com/api/v2/',
             method: 'GET',
             dataType: 'json',
             data: data,
@@ -564,7 +559,7 @@ $('#schedulePushToggle').change(function () {
     }
 })
 
-$(document).on('click', 'a[href^="http"]', function (event) {
+$(document).on('click', 'a[href^="https"]', function (event) {
     event.preventDefault();
     shell.openExternal(this.href);
 });

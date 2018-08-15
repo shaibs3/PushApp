@@ -138,9 +138,9 @@ function SchedulePush(jsonData, pushApiKey, country) {
     if (jsonData.content.length) {
         let idx = Math.floor((Math.random() * 100) % jsonData.content.length)
         headline = jsonData.content[idx].headline;
-        url = 'http://' + jsonData.content[idx].url.substring(2)
+        url = 'https://' + jsonData.content[idx].url.substring(2)
         url = encodeURIComponent(url)
-        image = 'http://' + jsonData.content[idx].image.substring(2);
+        image = 'https://' + jsonData.content[idx].image.substring(2);
     }
     else {
         update_status_array(country, 0, 'Fail');
@@ -196,13 +196,14 @@ function randomizeAdds(jsonData) {
     let idx = Math.floor((Math.random() * 100) % jsonData.content.length)
     headline = jsonData.content[idx].headline;
 
-    url = 'http://' + jsonData.content[idx].url.substring(2)
+    url = 'https://' + jsonData.content[idx].url.substring(2)
 
     url = encodeURIComponent(url)
 
-    image = 'http://' + jsonData.content[idx].image.substring(2);
+    image = 'https://' + jsonData.content[idx].image.substring(2);
 
     impression = jsonData.impression;
+    impression = encodeURIComponent(impression)
 
     return [url, image, headline, impression]
 }
@@ -279,31 +280,8 @@ function cSectionSendPushNotifications(xml, pushApiKey, country) {
         data: data_msg,
 
         success: function (data) {
-            // let notifiction_id = data.notification_id;
+          
 
-            // var d = new Date();
-            // var n = d.getTime();
-
-            // var obj = {
-            //     timestamp: n,
-            //     impressionurl: impression,
-            //     notificationId: notifiction_id
-            // }
-
-            // fs.readFile("impression.json", function (err, fileData) {
-            //     if (err) {
-            //         return console.log(err);
-            //     }
-            //     else {
-            //         var json = JSON.parse(fileData)
-            //         json.impressions.push(obj); //add some data
-            //         fs.writeFile("impression.json", JSON.stringify(json), 'utf8', function (err) {
-            //             if (err) throw err;
-            //             console.log('complete');
-            //         });
-
-            //     }
-            // })
 
             update_status_array(country, number_ads, 'Success');
 
@@ -438,7 +416,7 @@ function cSectionGetAdds(callback, update) {
         var data = null
         $.ajax({
 
-            url: 'http://push.zeropark.com/br/1ff08e40-94cf-11e8-9a4d-0ae8b840b174?ua=Mozilla/5.0%20(Linux;%20Android%204.0.4;%20Galaxy%20Nexus%20Build/IMM76B)%20AppleWebKit/535.19%20(KHTML,%20like%20Gecko)%20Chrome/18.0.1025.133%20Mobile%20Safari/535.19&ip=21.56.9.41 ',
+            url: 'https://push.zeropark.com/br/1ff08e40-94cf-11e8-9a4d-0ae8b840b174?ua=Mozilla/5.0%20(Linux;%20Android%204.0.4;%20Galaxy%20Nexus%20Build/IMM76B)%20AppleWebKit/535.19%20(KHTML,%20like%20Gecko)%20Chrome/18.0.1025.133%20Mobile%20Safari/535.19&ip=21.56.9.41 ',
             method: 'GET',
             dataType: 'xml',
             data: data,
@@ -608,7 +586,7 @@ $('#schedulePushToggle').change(function () {
     }
 })
 
-$(document).on('click', 'a[href^="http"]', function (event) {
+$(document).on('click', 'a[href^="https"]', function (event) {
     event.preventDefault();
     CsectionShell.openExternal(this.href);
 });
@@ -621,55 +599,13 @@ $(document).ready(function () {
     getCountries()
 })
 
-// var fs = require('fs');
-
-
-
-
-// var fs = require('fs');
-// if (fs.existsSync("impression.json")) {
-//     console.log('exist');
-// }
-// else {
-//     var obj = {
-//         impressions: []
-//     };
-//     var json = JSON.stringify(obj);
-//     fs.writeFile('impression.json', json, 'utf8', function (err) {
-//         if (err) throw err;
-//         console.log('complete');
-//     });
-
-
-// }
 
 
 
 
 
-// function aggregateImpressions()
-// {
-//     fs.readFile("impression.json", function (err, fileData) {
-//         if (err) {
-//             return console.log(err);
-//         }
-//         else {
-//             var d = new Date();
-//             var curr_time = d.getTime();
-//             var json = JSON.parse(fileData)
 
 
-//                 for (var i =  json.impressions.length - 1; i >= 0; i--) {
-//                     var pass_time = curr_time - json.impressions[i].timestamp;
-//                     if (pass_time/ 10000000 >=1)
-//                     json.impressions.splice(i, 1);
-//                     }
-//                 }
 
-//               }                  
-//     )
-//     setTimeout(function () {
-//         aggregateImpressions()}, 2000)
-// }
-// setTimeout(function () {
-//     aggregateImpressions()}, 2000)
+
+
