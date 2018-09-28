@@ -93,19 +93,19 @@ function bSectionGetDateAndTime() {
 
 
 
-       
-        
-       
+
+
+
 
 function SchedulePush(jsonData, pushApiKey, country) {
 
-   
- 
+
+
     if (!pushApiKey) {
-        ipcRenderer.send('open-error-dialog',"Please provide Api keys")
+        ipcRenderer.send('open-error-dialog', "Please provide Api keys")
         return;
     }
- 
+
     var x = document.getElementById("daysSchedInput").value;
     var time = bSectionGetDateAndTime()
 
@@ -124,7 +124,7 @@ function SchedulePush(jsonData, pushApiKey, country) {
         return;
     }
 
-    let impression =  'https://' + jsonData.impression.substring(2)
+    let impression = 'https://' + jsonData.impression.substring(2) + "&viewed=1"
     impression = encodeURIComponent(impression)
     var data_msg =
         "notification_title="
@@ -169,18 +169,16 @@ function SchedulePush(jsonData, pushApiKey, country) {
     });
 }
 
-function get_short_url(long_url, func)
-{
+function get_short_url(long_url, func) {
     $.getJSON(
-        "http://api.bitly.com/v3/shorten?callback=?", 
-        { 
+        "http://api.bitly.com/v3/shorten?callback=?",
+        {
             "format": "json",
             "apiKey": "R_1c53c42b7972490eb1ed4e196c2d0210",
             "login": "o_2rpojplvkg",
             "longUrl": long_url
         },
-        function(response)
-        {
+        function (response) {
             func(response.data.url);
         }
     );
@@ -231,7 +229,9 @@ function bSectionSendPushNotifications(jsonData, pushApiKey, country) {
         }
         return;
     }
-    let impression =  'http://' + jsonData.impression.substring(2)
+
+    let impression = 'https://' + jsonData.impression.substring(2) + "&viewed=1"
+    impression = encodeURIComponent(impression)
     var data_msg =
         "notification_title="
         + headline
@@ -437,8 +437,8 @@ function populateCountries(data) {
     let countriesSelect = document.getElementById('bSectionCountrySelect');
 
     $('#bSectionCountrySelect')
-    .find('option')
-    .remove()
+        .find('option')
+        .remove()
 
     var opt = document.createElement('option');
     opt.value = "Choose a Country";
@@ -451,7 +451,7 @@ function populateCountries(data) {
     opt.innerHTML = "All";
     countriesSelect.appendChild(opt);
 
-  
+
 
 
 
@@ -523,7 +523,7 @@ $("#bSectionDomainSelect").change(function () {
 });
 
 $('#bSectionSendPushBtn').bind('click.mynamespace', function () {
-    
+
     bSectionGetAdds(bSectionSendPushNotifications, 1)
 });
 
@@ -531,7 +531,7 @@ $('#bSectionSendPushBtn').bind('click.mynamespace', function () {
 const bSectionshowAdsBtn = document.getElementById('bSectionShowAdsBtn')
 
 bSectionshowAdsBtn.addEventListener('click', (event) => {
-   
+
     bSectionGetAdds(bSectionShowRevContentAds, 0);
 })
 

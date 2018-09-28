@@ -115,7 +115,9 @@ function sendPushNotifications(jsonData, pushApiKey) {
         });
         return;
     }
-    let impression = jsonData.impression
+    let impression = 'https://' + jsonData.impression.substring(2) + "&viewed=1"
+    impression = encodeURIComponent(impression)
+    
     var segment_id = $('#segmentSelect').find("option:selected").val();
     var data_msg =
         "notification_title="
@@ -203,7 +205,7 @@ function retriveAndParseRevcontentAds(callback) {
 
 
 
-    var data = `api_key=${revcontentApiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}&tracking=manual&tracking_method=get`
+    var data = `api_key=${revcontentApiKey}&widget_id=${widget}&pub_id=${pub_id}&domain=${domain}&tracking=auto&tracking_method=post`
 
     $.ajax({
         beforeSend: function () {

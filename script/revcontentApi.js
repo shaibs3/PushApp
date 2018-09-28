@@ -25,7 +25,7 @@ module.exports = {
             return;
         }
 
-        var data = `api_key=${revcontentApiKey}&widget_id=95943&pub_id=3120&domain=Push.lovemyleads.com&tracking=manual&tracking_method=get`
+        var data = `api_key=${revcontentApiKey}&widget_id=95943&pub_id=3120&domain=Push.lovemyleads.com&tracking=auto&tracking_method=post`
 
         $.ajax({
             beforeSend: function () {

@@ -183,7 +183,7 @@ module.exports = {
 
         "Iceland" : "31.209.192.1",
 
-        "India": "120.56.0.6",
+        "India": "122.184.133.13",
 
         "Indonesia": "152.118.0.6",
 
@@ -195,7 +195,7 @@ module.exports = {
 
         "Isle of Man": "66.84.66.2",
 
-        "Israel": "5.28.167.125",
+        "Israel": "132.78.255.240",
 
         "Italy": "195.110.112.5",
 
@@ -401,7 +401,7 @@ module.exports = {
 
         "Tunisia": "41.224.0.0",
 
-        "Turkey": "5.2.80.1",
+        "Turkey": "194.27.255.250",
 
         "Turkmenistan": "27.34.176.0",
 

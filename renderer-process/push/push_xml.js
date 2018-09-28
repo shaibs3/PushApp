@@ -143,7 +143,7 @@ function SchedulePush(jsonData, pushApiKey, country) {
         image = 'https://' + jsonData.content[idx].image.substring(2);
     }
     else {
-        update_status_array(country, 0, 'Fail');
+        csection_update_status_array(country, 0, 'Fail');
         if (cSectionSemaphore == 0) {
             sentComplete()
         }
@@ -176,10 +176,10 @@ function SchedulePush(jsonData, pushApiKey, country) {
         data: data_msg,
 
         success: function (data) {
-            update_status_array(this.local_country, jsonData.content.length, 'Success');
+            csection_update_status_array(this.local_country, jsonData.content.length, 'Success');
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-            update_status_array(this.local_country, jsonData.content.length, 'Fail');
+            csection_update_status_array(this.local_country, jsonData.content.length, 'Fail');
             CsectionipcRenderer.send('open-error-dialog', "Error type: " + errorThrown)
 
         },
@@ -202,6 +202,9 @@ function randomizeAdds(jsonData) {
 
     image = 'https://' + jsonData.content[idx].image.substring(2);
 
+    
+
+    
     impression = jsonData.impression;
     impression = encodeURIComponent(impression)
 
@@ -250,7 +253,7 @@ function cSectionSendPushNotifications(xml, pushApiKey, country) {
 
     }
     else {
-        update_status_array(country, 0, 'Fail');
+        csection_update_status_array(country, 0, 'Fail');
         if (cSectionSemaphore == 0) {
             sentComplete()
         }
@@ -283,11 +286,11 @@ function cSectionSendPushNotifications(xml, pushApiKey, country) {
           
 
 
-            update_status_array(country, number_ads, 'Success');
+            csection_update_status_array(country, number_ads, 'Success');
 
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-            update_status_array(country, 0, 'Fail');
+            csection_update_status_array(country, 0, 'Fail');
             CsectionipcRenderer.send('open-error-dialog', errorThrown)
         },
         complete: function () {
@@ -407,7 +410,7 @@ function cSectionGetAdds(callback, update) {
 
         let country = country_array[idx]
         if (!cSectionCountryToIp.hasOwnProperty(country)) {
-            update_status_array(country, 0, 'Fail');
+            csection_update_status_array(country, 0, 'Fail');
             continue;
         }
         var user_ip = cSectionCountryToIp[country]
@@ -416,7 +419,7 @@ function cSectionGetAdds(callback, update) {
         var data = null
         $.ajax({
 
-            url: 'https://push.zeropark.com/br/1ff08e40-94cf-11e8-9a4d-0ae8b840b174?ua=Mozilla/5.0%20(Linux;%20Android%204.0.4;%20Galaxy%20Nexus%20Build/IMM76B)%20AppleWebKit/535.19%20(KHTML,%20like%20Gecko)%20Chrome/18.0.1025.133%20Mobile%20Safari/535.19&ip=21.56.9.41 ',
+            url: 'http://push.zeropark.com/br/1ff08e40-94cf-11e8-9a4d-0ae8b840b174?ua=Mozilla/5.0%20(Linux;%20Android%204.0.4;%20Galaxy%20Nexus%20Build/IMM76B)%20AppleWebKit/535.19%20(KHTML,%20like%20Gecko)%20Chrome/18.0.1025.133%20Mobile%20Safari/535.19&ip=21.56.9.41&secure=true',
             method: 'GET',
             dataType: 'xml',
             data: data,
@@ -436,7 +439,7 @@ function cSectionGetAdds(callback, update) {
 
             },
             error: function (data) {
-                // update_status_array(country, 0, 'Fail');
+                // csection_update_status_array(country, 0, 'Fail');
             },
             complete: function () {
                 if (cSectionSemaphore == 0) {
@@ -448,7 +451,7 @@ function cSectionGetAdds(callback, update) {
     }
 }
 
-function update_status_array(local_country, ads, status) {
+function csection_update_status_array(local_country, ads, status) {
 
     cSectionStatus_array[cSectionStatus_array_idx] = { country: local_country, num_ads: ads, send: status };
     cSectionSemaphore--
