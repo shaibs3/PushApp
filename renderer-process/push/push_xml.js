@@ -419,7 +419,8 @@ function cSectionGetAdds(callback, update) {
         var data = null
         $.ajax({
 
-            url: 'http://push.zeropark.com/br/1ff08e40-94cf-11e8-9a4d-0ae8b840b174?ua=Mozilla/5.0%20(Linux;%20Android%204.0.4;%20Galaxy%20Nexus%20Build/IMM76B)%20AppleWebKit/535.19%20(KHTML,%20like%20Gecko)%20Chrome/18.0.1025.133%20Mobile%20Safari/535.19&ip=21.56.9.41&secure=true',
+            url: 'http://push.zeropark.com/br/1ff08e40-94cf-11e8-9a4d-0ae8b840b174?ua=Mozilla/5.0%20(Linux;%20Android%204.0.4;%20Galaxy%20Nexus%20Build/IMM76B)%20AppleWebKit/535.19%20(KHTML,%20like%20Gecko)%20Chrome/18.0.1025.133%20Mobile%20Safari/535.19&ip=' + user_ip+'&secure=true',
+    //        url: 'http://push.zeropark.com/br/1ff08e40-94cf-11e8-9a4d-0ae8b840b174?ip='+user_ip +'&secure=true',
             method: 'GET',
             dataType: 'xml',
             data: data,
@@ -458,7 +459,7 @@ function csection_update_status_array(local_country, ads, status) {
     cSectionStatus_array_idx++;
 }
 
-function populateCountries(data) {
+function cSectionPopulateCountries(data) {
 
 
     /* populate countries */
@@ -496,7 +497,7 @@ function populateCountries(data) {
     $('#cSectionCountrySelect').trigger('change');
 }
 
-function getCountries() {
+function cSectionGetCountries() {
 
 
     const CsectionStore = require('electron-store');
@@ -521,7 +522,7 @@ function getCountries() {
         method: 'GET',
         dataType: 'json',
 
-        success: populateCountries,
+        success: cSectionPopulateCountries,
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             var dialog = remote.require('electron').dialog
             dialog.showMessageBox({
@@ -548,7 +549,7 @@ cSectionPushBtn.addEventListener('click', (event) => {
 
 $("#cSectionDomainSelect").change(function () {
     var selected = $('#cSectionDomainSelect option:selected').val();
-    getCountries()
+    cSectionGetCountries()
 
 });
 
@@ -599,7 +600,7 @@ $(document).ready(function () {
     $('#CountriesTable').DataTable();
     $('#CountriesTable').hide();
     $("#cSectionCountrySelect").select2({ placeholder: 'Select a country' });
-    getCountries()
+    cSectionGetCountries()
 })
 
 
